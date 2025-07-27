@@ -1,20 +1,23 @@
 {
-  "name": "pet-turbo",
-  "private": true,
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
-  },
-  "devDependencies": {
-    "prettier": "^3.6.2",
-    "turbo": "^2.5.5",
-    "typescript": "5.8.3"
-  },
-  "packageManager": "pnpm@9.0.0",
-  "engines": {
-    "node": ">=18"
-  }
+	"name": "pet-turbo",
+	"private": true,
+	"scripts": {
+		"build": "turbo run build",
+		"dev": "turbo run dev",
+		"lint": "turbo run lint",
+		"format": "biome format --write",
+		"check-types": "turbo run check-types",
+		"prepare": "husky"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.1.2",
+		"husky": "^9.1.7",
+		"prettier": "^3.6.2",
+		"turbo": "^2.5.5",
+		"typescript": "5.8.3"
+	},
+	"packageManager": "pnpm@9.0.0",
+	"engines": {
+		"node": ">=18"
+	}
 }
