@@ -1,5 +1,5 @@
-import { Router, type IRouter } from 'express';
-import { AccountController } from '../controllers/accountController.js';
+import { Router, type IRouter } from "express";
+import { AccountController } from "../controllers/accountController.js";
 
 const router: IRouter = Router();
 
@@ -52,7 +52,7 @@ const router: IRouter = Router();
  *       409:
  *         description: Account already linked
  */
-router.post('/', AccountController.linkAccount);
+router.post("/", AccountController.linkAccount);
 
 /**
  * @swagger
@@ -81,7 +81,7 @@ router.post('/', AccountController.linkAccount);
  *       200:
  *         description: List of accounts
  */
-router.get('/', AccountController.getAllAccounts);
+router.get("/", AccountController.getAllAccounts);
 
 /**
  * @swagger
@@ -106,7 +106,7 @@ router.get('/', AccountController.getAllAccounts);
  *       404:
  *         description: Account not found
  */
-router.get('/:provider/:providerAccountId', AccountController.getAccount);
+router.get("/:provider/:providerAccountId", AccountController.getAccount);
 
 /**
  * @swagger
@@ -131,7 +131,7 @@ router.get('/:provider/:providerAccountId', AccountController.getAccount);
  *       404:
  *         description: Account not found
  */
-router.delete('/:provider/:providerAccountId', AccountController.unlinkAccount);
+router.delete("/:provider/:providerAccountId", AccountController.unlinkAccount);
 
 /**
  * @swagger
@@ -157,7 +157,10 @@ router.delete('/:provider/:providerAccountId', AccountController.unlinkAccount);
  *       404:
  *         description: Account not found
  */
-router.get('/:provider/:providerAccountId/user', AccountController.getUserByAccount);
+router.get(
+	"/:provider/:providerAccountId/user",
+	AccountController.getUserByAccount,
+);
 
 /**
  * @swagger
@@ -175,6 +178,6 @@ router.get('/:provider/:providerAccountId/user', AccountController.getUserByAcco
  *       200:
  *         description: User accounts
  */
-router.get('/user/:userId', AccountController.getAccountsByUserId);
+router.get("/user/:userId", AccountController.getAccountsByUserId);
 
-export default router; 
+export default router;

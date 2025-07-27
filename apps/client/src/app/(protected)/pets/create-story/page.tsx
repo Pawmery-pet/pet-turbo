@@ -11,13 +11,17 @@ export default async function CreateStoryPage() {
 
 	// Ensure we have a valid user ID
 	const userId = session.user.id || "unknown";
-	
-	return <CreateStoryClient session={{ 
-		user: {
-			id: userId,
-			name: session.user.name,
-			email: session.user.email,
-			image: session.user.image
-		}
-	}} />;
+
+	return (
+		<CreateStoryClient
+			session={{
+				user: {
+					id: userId,
+					name: session.user.name,
+					email: session.user.email,
+					image: session.user.image,
+				},
+			}}
+		/>
+	);
 }

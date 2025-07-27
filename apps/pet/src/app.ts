@@ -1,10 +1,10 @@
-import express, { type Express } from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import swaggerUi from 'swagger-ui-express';
-import { prisma } from './lib/prisma/client.js';
-import petRoutes from './routes/pets.js';
-import { swaggerSpec } from './config/swagger.js';
+import express, { type Express } from "express";
+import cors from "cors";
+import helmet from "helmet";
+import swaggerUi from "swagger-ui-express";
+import { prisma } from "./lib/prisma/client.js";
+import petRoutes from "./routes/pets.js";
+import { swaggerSpec } from "./config/swagger.js";
 
 const app: Express = express();
 
@@ -12,31 +12,37 @@ const app: Express = express();
 app.use(helmet());
 
 // CORS configuration
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-  credentials: true,
-}));
+app.use(
+	cors({
+		origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+		credentials: true,
+	}),
+);
 
 // Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // Request logging middleware
 app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} ${req.method} ${req.path}`);
-  next();
+	console.log(`${new Date().toISOString()} ${req.method} ${req.path}`);
+	next();
 });
 
 // Swagger documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'Pet Service API Documentation',
-}));
+app.use(
+	"/api-docs",
+	swaggerUi.serve,
+	swaggerUi.setup(swaggerSpec, {
+		customCss: ".swagger-ui .topbar { display: none }",
+		customSiteTitle: "Pet Service API Documentation",
+	}),
+);
 
 // Swagger JSON endpoint
-app.get('/api-docs.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(swaggerSpec);
+app.get("/api-docs.json", (req, res) => {
+	res.setHeader("Content-Type", "application/json");
+	res.send(swaggerSpec);
 });
 
 /**
@@ -66,28 +72,28 @@ app.get('/api-docs.json', (req, res) => {
  *                       type: string
  *                       example: Database connection failed
  */
-app.get('/health', async (req, res) => {
-  try {
-    // Check database connection by counting pets
-    await prisma.pet.count();
-    res.json({
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-      database: 'connected',
-    });
-  } catch (error) {
-    console.error('Health check failed:', error);
-    res.status(503).json({
-      status: 'error',
-      timestamp: new Date().toISOString(),
-      database: 'disconnected',
-      error: 'Database connection failed',
-    });
-  }
+app.get("/health", async (req, res) => {
+	try {
+		// Check database connection by counting pets
+		await prisma.pet.count();
+		res.json({
+			status: "ok",
+			timestamp: new Date().toISOString(),
+			database: "connected",
+		});
+	} catch (error) {
+		console.error("Health check failed:", error);
+		res.status(503).json({
+			status: "error",
+			timestamp: new Date().toISOString(),
+			database: "disconnected",
+			error: "Database connection failed",
+		});
+	}
 });
 
 // API routes
-app.use('/api/pets', petRoutes);
+app.use("/api/pets", petRoutes);
 
 /**
  * @swagger
@@ -129,37 +135,44 @@ app.use('/api/pets', petRoutes);
  *                       type: string
  *                       example: /api-docs
  */
-app.get('/', (req, res) => {
-  res.json({
-    name: 'Pet Service API',
-    version: '1.0.0',
-    description: 'Simple pet CRUD service with user associations',
-    endpoints: {
-      health: '/health',
-      pets: '/api/pets',
-      userPets: '/api/pets/user/{userId}',
-      documentation: '/api-docs',
-    },
-  });
+app.get("/", (req, res) => {
+	res.json({
+		name: "Pet Service API",
+		version: "1.0.0",
+		description: "Simple pet CRUD service with user associations",
+		endpoints: {
+			health: "/health",
+			pets: "/api/pets",
+			userPets: "/api/pets/user/{userId}",
+			documentation: "/api-docs",
+		},
+	});
 });
 
 // 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({
-    error: 'Not Found',
-    message: `Route ${req.method} ${req.originalUrl} not found`,
-    statusCode: 404,
-  });
+app.use("*", (req, res) => {
+	res.status(404).json({
+		error: "Not Found",
+		message: `Route ${req.method} ${req.originalUrl} not found`,
+		statusCode: 404,
+	});
 });
 
 // Global error handler
-app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Unhandled error:', error);
-  res.status(500).json({
-    error: 'Internal Server Error',
-    message: 'An unexpected error occurred',
-    statusCode: 500,
-  });
-});
+app.use(
+	(
+		error: any,
+		req: express.Request,
+		res: express.Response,
+		next: express.NextFunction,
+	) => {
+		console.error("Unhandled error:", error);
+		res.status(500).json({
+			error: "Internal Server Error",
+			message: "An unexpected error occurred",
+			statusCode: 500,
+		});
+	},
+);
 
 export default app;

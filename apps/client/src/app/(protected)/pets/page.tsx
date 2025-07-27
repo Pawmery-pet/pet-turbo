@@ -8,14 +8,14 @@ export default async function PetsPage() {
 	// Fetch user's pets from the backend
 	let pets: any[] = [];
 	let error: string | null = null;
-	
+
 	try {
 		// Get user ID from session - we need this for the pet service
-		const userId = session?.user?.id || session?.user?.email || 'unknown';
-		if (userId === 'unknown') {
-			throw new Error('No authenticated user found');
+		const userId = session?.user?.id || session?.user?.email || "unknown";
+		if (userId === "unknown") {
+			throw new Error("No authenticated user found");
 		}
-		
+
 		const result = await petService.getUserPets(userId);
 		pets = result.pets;
 	} catch (err) {
@@ -55,12 +55,10 @@ export default async function PetsPage() {
 							<h3 className="text-lg font-medium text-gray-900 mb-2">
 								Failed to load pets
 							</h3>
-							<p className="text-gray-600 mb-6">
-								{error}
-							</p>
-							<button 
+							<p className="text-gray-600 mb-6">{error}</p>
+							<button
 								type="button"
-								onClick={() => window.location.reload()} 
+								onClick={() => window.location.reload()}
 								className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-colors"
 							>
 								Try Again
@@ -100,7 +98,8 @@ export default async function PetsPage() {
 									</div>
 									<div className="space-y-2">
 										<p className="text-sm text-gray-600">
-											<span className="font-medium">Breed:</span> {pet.breed || 'Unknown'}
+											<span className="font-medium">Breed:</span>{" "}
+											{pet.breed || "Unknown"}
 										</p>
 										{pet.age && (
 											<p className="text-sm text-gray-600">
@@ -109,7 +108,8 @@ export default async function PetsPage() {
 										)}
 										{pet.description && (
 											<p className="text-sm text-gray-600 truncate">
-												<span className="font-medium">Description:</span> {pet.description}
+												<span className="font-medium">Description:</span>{" "}
+												{pet.description}
 											</p>
 										)}
 										<p className="text-xs text-gray-500">
@@ -117,7 +117,7 @@ export default async function PetsPage() {
 										</p>
 									</div>
 									<div className="mt-4 flex space-x-2">
-										<Link 
+										<Link
 											href={`/pets/${pet.id}`}
 											className="text-blue-600 hover:text-blue-800 text-sm font-medium"
 										>

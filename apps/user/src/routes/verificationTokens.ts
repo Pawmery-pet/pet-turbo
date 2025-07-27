@@ -1,5 +1,5 @@
-import { Router, type IRouter } from 'express';
-import { VerificationTokenController } from '../controllers/verificationTokenController.js';
+import { Router, type IRouter } from "express";
+import { VerificationTokenController } from "../controllers/verificationTokenController.js";
 
 const router: IRouter = Router();
 
@@ -39,7 +39,7 @@ const router: IRouter = Router();
  *       409:
  *         description: Token already exists
  */
-router.post('/', VerificationTokenController.createVerificationToken);
+router.post("/", VerificationTokenController.createVerificationToken);
 
 /**
  * @swagger
@@ -52,7 +52,7 @@ router.post('/', VerificationTokenController.createVerificationToken);
  *       200:
  *         description: List of verification tokens
  */
-router.get('/', VerificationTokenController.getAllVerificationTokens);
+router.get("/", VerificationTokenController.getAllVerificationTokens);
 
 /**
  * @swagger
@@ -79,7 +79,10 @@ router.get('/', VerificationTokenController.getAllVerificationTokens);
  *       404:
  *         description: Token not found
  */
-router.get('/:identifier/:token', VerificationTokenController.getVerificationToken);
+router.get(
+	"/:identifier/:token",
+	VerificationTokenController.getVerificationToken,
+);
 
 /**
  * @swagger
@@ -107,7 +110,10 @@ router.get('/:identifier/:token', VerificationTokenController.getVerificationTok
  *       404:
  *         description: Token not found or already used
  */
-router.delete('/:identifier/:token/use', VerificationTokenController.useVerificationToken);
+router.delete(
+	"/:identifier/:token/use",
+	VerificationTokenController.useVerificationToken,
+);
 
 /**
  * @swagger
@@ -120,6 +126,6 @@ router.delete('/:identifier/:token/use', VerificationTokenController.useVerifica
  *       200:
  *         description: Cleanup completed
  */
-router.delete('/cleanup', VerificationTokenController.cleanupExpiredTokens);
+router.delete("/cleanup", VerificationTokenController.cleanupExpiredTokens);
 
-export default router; 
+export default router;

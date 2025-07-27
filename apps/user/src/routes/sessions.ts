@@ -1,5 +1,5 @@
-import { Router, type IRouter } from 'express';
-import { SessionController } from '../controllers/sessionController.js';
+import { Router, type IRouter } from "express";
+import { SessionController } from "../controllers/sessionController.js";
 
 const router: IRouter = Router();
 
@@ -36,7 +36,7 @@ const router: IRouter = Router();
  *       409:
  *         description: Session already exists
  */
-router.post('/', SessionController.createSession);
+router.post("/", SessionController.createSession);
 
 /**
  * @swagger
@@ -60,7 +60,7 @@ router.post('/', SessionController.createSession);
  *       200:
  *         description: List of sessions
  */
-router.get('/', SessionController.getAllSessions);
+router.get("/", SessionController.getAllSessions);
 
 /**
  * @swagger
@@ -80,7 +80,7 @@ router.get('/', SessionController.getAllSessions);
  *       404:
  *         description: Session not found
  */
-router.get('/:sessionToken', SessionController.getSession);
+router.get("/:sessionToken", SessionController.getSession);
 
 /**
  * @swagger
@@ -112,7 +112,7 @@ router.get('/:sessionToken', SessionController.getSession);
  *       404:
  *         description: Session not found
  */
-router.put('/:sessionToken', SessionController.updateSession);
+router.put("/:sessionToken", SessionController.updateSession);
 
 /**
  * @swagger
@@ -132,7 +132,7 @@ router.put('/:sessionToken', SessionController.updateSession);
  *       404:
  *         description: Session not found
  */
-router.delete('/:sessionToken', SessionController.deleteSession);
+router.delete("/:sessionToken", SessionController.deleteSession);
 
 /**
  * @swagger
@@ -153,7 +153,7 @@ router.delete('/:sessionToken', SessionController.deleteSession);
  *       404:
  *         description: Session not found
  */
-router.get('/:sessionToken/user', SessionController.getSessionAndUser);
+router.get("/:sessionToken/user", SessionController.getSessionAndUser);
 
 /**
  * @swagger
@@ -171,6 +171,6 @@ router.get('/:sessionToken/user', SessionController.getSessionAndUser);
  *       200:
  *         description: User sessions
  */
-router.get('/user/:userId', SessionController.getSessionsByUserId);
+router.get("/user/:userId", SessionController.getSessionsByUserId);
 
-export default router; 
+export default router;

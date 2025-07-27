@@ -1,5 +1,5 @@
-import { Router, type IRouter } from 'express';
-import { UserController } from '../controllers/userController.js';
+import { Router, type IRouter } from "express";
+import { UserController } from "../controllers/userController.js";
 
 const router: IRouter = Router();
 
@@ -29,7 +29,7 @@ const router: IRouter = Router();
  *             schema:
  *               $ref: '#/components/schemas/ApiErrorResponse'
  */
-router.get('/', UserController.getAllUsers);
+router.get("/", UserController.getAllUsers);
 
 /**
  * @swagger
@@ -64,7 +64,7 @@ router.get('/', UserController.getAllUsers);
  *             schema:
  *               $ref: '#/components/schemas/ApiErrorResponse'
  */
-router.get('/:id', UserController.getUserById);
+router.get("/:id", UserController.getUserById);
 
 /**
  * @swagger
@@ -99,7 +99,7 @@ router.get('/:id', UserController.getUserById);
  *             schema:
  *               $ref: '#/components/schemas/ApiErrorResponse'
  */
-router.get('/email/:email', UserController.getUserByEmail);
+router.get("/email/:email", UserController.getUserByEmail);
 
 /**
  * @swagger
@@ -160,7 +160,7 @@ router.get('/email/:email', UserController.getUserByEmail);
  *             schema:
  *               $ref: '#/components/schemas/ApiErrorResponse'
  */
-router.post('/', UserController.createUser);
+router.post("/", UserController.createUser);
 
 /**
  * @swagger
@@ -226,7 +226,7 @@ router.post('/', UserController.createUser);
  *             schema:
  *               $ref: '#/components/schemas/ApiErrorResponse'
  */
-router.put('/:id', UserController.updateUser);
+router.put("/:id", UserController.updateUser);
 
 /**
  * @swagger
@@ -257,6 +257,6 @@ router.put('/:id', UserController.updateUser);
  *             schema:
  *               $ref: '#/components/schemas/ApiErrorResponse'
  */
-router.delete('/:id', UserController.deleteUser);
+router.delete("/:id", UserController.deleteUser);
 
-export default router; 
+export default router;

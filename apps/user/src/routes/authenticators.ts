@@ -1,5 +1,5 @@
-import { Router, type IRouter } from 'express';
-import { AuthenticatorController } from '../controllers/authenticatorController.js';
+import { Router, type IRouter } from "express";
+import { AuthenticatorController } from "../controllers/authenticatorController.js";
 
 const router: IRouter = Router();
 
@@ -49,7 +49,7 @@ const router: IRouter = Router();
  *       409:
  *         description: Authenticator already exists
  */
-router.post('/', AuthenticatorController.createAuthenticator);
+router.post("/", AuthenticatorController.createAuthenticator);
 
 /**
  * @swagger
@@ -73,7 +73,7 @@ router.post('/', AuthenticatorController.createAuthenticator);
  *       200:
  *         description: List of authenticators
  */
-router.get('/', AuthenticatorController.getAllAuthenticators);
+router.get("/", AuthenticatorController.getAllAuthenticators);
 
 /**
  * @swagger
@@ -93,7 +93,7 @@ router.get('/', AuthenticatorController.getAllAuthenticators);
  *       404:
  *         description: Authenticator not found
  */
-router.get('/:credentialID', AuthenticatorController.getAuthenticator);
+router.get("/:credentialID", AuthenticatorController.getAuthenticator);
 
 /**
  * @swagger
@@ -113,7 +113,7 @@ router.get('/:credentialID', AuthenticatorController.getAuthenticator);
  *       404:
  *         description: Authenticator not found
  */
-router.delete('/:credentialID', AuthenticatorController.deleteAuthenticator);
+router.delete("/:credentialID", AuthenticatorController.deleteAuthenticator);
 
 /**
  * @swagger
@@ -145,7 +145,10 @@ router.delete('/:credentialID', AuthenticatorController.deleteAuthenticator);
  *       404:
  *         description: Authenticator not found
  */
-router.put('/:credentialID/counter', AuthenticatorController.updateAuthenticatorCounter);
+router.put(
+	"/:credentialID/counter",
+	AuthenticatorController.updateAuthenticatorCounter,
+);
 
 /**
  * @swagger
@@ -163,6 +166,6 @@ router.put('/:credentialID/counter', AuthenticatorController.updateAuthenticator
  *       200:
  *         description: User authenticators
  */
-router.get('/user/:userId', AuthenticatorController.getAuthenticatorsByUserId);
+router.get("/user/:userId", AuthenticatorController.getAuthenticatorsByUserId);
 
-export default router; 
+export default router;
