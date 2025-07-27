@@ -8,6 +8,7 @@
 		"start": "next start"
 	},
 	"dependencies": {
+		"@auth/core": "^0.40.0",
 		"next": "latest",
 		"next-auth": "^5.0.0-beta.4",
 		"react": "latest",

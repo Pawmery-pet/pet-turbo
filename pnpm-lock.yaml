@@ -23,6 +23,9 @@ importers:
 
   apps/client:
     dependencies:
+      '@auth/core':
+        specifier: ^0.40.0
+        version: 0.40.0
       next:
         specifier: latest
         version: 15.4.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)

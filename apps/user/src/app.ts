@@ -4,6 +4,10 @@ import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 import { prisma } from './lib/prisma.js';
 import userRoutes from './routes/users.js';
+import accountRoutes from './routes/accounts.js';
+import sessionRoutes from './routes/sessions.js';
+import verificationTokenRoutes from './routes/verificationTokens.js';
+import authenticatorRoutes from './routes/authenticators.js';
 import { swaggerSpec } from './config/swagger.js';
 
 const app: Express = express();
@@ -89,6 +93,10 @@ app.get('/health', async (req, res) => {
 
 // API routes
 app.use('/api/users', userRoutes);
+app.use('/api/accounts', accountRoutes);
+app.use('/api/sessions', sessionRoutes);
+app.use('/api/verification-tokens', verificationTokenRoutes);
+app.use('/api/authenticators', authenticatorRoutes);
 
 /**
  * @swagger
@@ -136,6 +144,10 @@ app.get('/', (req, res) => {
     endpoints: {
       health: '/health',
       users: '/api/users',
+      accounts: '/api/accounts',
+      sessions: '/api/sessions',
+      verificationTokens: '/api/verification-tokens',
+      authenticators: '/api/authenticators',
       documentation: '/api-docs',
     },
   });
