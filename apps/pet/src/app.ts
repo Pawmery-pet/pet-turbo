@@ -2,7 +2,7 @@ import express, { type Express } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
-import { prisma } from './lib/prisma.js';
+import { prisma } from './lib/prisma/client.js';
 import petRoutes from './routes/pets.js';
 import { swaggerSpec } from './config/swagger.js';
 

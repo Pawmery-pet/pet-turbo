@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { prisma } from '../lib/prisma.js';
+import { prisma } from '../lib/prisma/client.js';
 import { toUserResponse } from '../types/user.js';
 import type { CreateUserRequest, UpdateUserRequest, GetUsersQuery } from '../types/user.js';
 

@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { prisma } from '../lib/prisma.js';
+import { prisma } from '../lib/prisma/client.js';
 import { toSessionResponse } from '../types/auth.js';
 import type { CreateSessionRequest, UpdateSessionRequest, GetSessionsQuery } from '../types/auth.js';
 

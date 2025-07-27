@@ -5,6 +5,8 @@ datasource db {
  
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = []
+  output          = ".prisma"
 }
  
 model User {

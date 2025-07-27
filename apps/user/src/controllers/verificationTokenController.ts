@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { prisma } from '../lib/prisma.js';
+import { prisma } from '../lib/prisma/client.js';
 import { toVerificationTokenResponse } from '../types/auth.js';
 import type { CreateVerificationTokenRequest } from '../types/auth.js';
 
