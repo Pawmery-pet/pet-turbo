@@ -1,0 +1,14 @@
+{
+	"schema": "https://json.schemastore.org/devcontainer.json",
+	"name": "Pawmery - Pet Turbo",
+	"dockerComposeFile": "docker-compose.devcontainer.yml",
+	"service": "workspace",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"features": {
+		"ghcr.io/devcontainers/features/aws-cli:1": {},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
+		"ghcr.io/devcontainers/features/github-cli:1": {}
+	},
+	"postCreateCommand": ".devcontainer/postCreate.sh",
+	"postStartCommand": ".devcontainer/postStart.sh"
+}
