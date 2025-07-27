@@ -1,4 +1,4 @@
-import type { User } from '@prisma/client';
+import type { User } from '../lib/prisma/.prisma';
 
 // API Request types
 export interface CreateUserRequest {

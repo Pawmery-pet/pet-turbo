@@ -3,6 +3,8 @@ import { PetController } from '../controllers/petController.js';
 
 const router: IRouter = Router();
 
+const petController = new PetController();
+
 /**
  * @swagger
  * /api/pets:
@@ -30,7 +32,7 @@ const router: IRouter = Router();
  *             schema:
  *               $ref: '#/components/schemas/ApiErrorResponse'
  */
-router.get('/', PetController.getAllPets);
+router.get('/', petController.getAllPets);
 
 /**
  * @swagger
@@ -59,7 +61,7 @@ router.get('/', PetController.getAllPets);
  *             schema:
  *               $ref: '#/components/schemas/ApiErrorResponse'
  */
-router.get('/user/:userId', PetController.getPetsByUserId);
+router.get('/user/:userId', petController.getPetsByUserId);
 
 /**
  * @swagger
@@ -90,7 +92,7 @@ router.get('/user/:userId', PetController.getPetsByUserId);
  *             schema:
  *               $ref: '#/components/schemas/ApiErrorResponse'
  */
-router.get('/:id', PetController.getPetById);
+router.get('/:id', petController.getPetById);
 
 /**
  * @swagger
@@ -125,7 +127,7 @@ router.get('/:id', PetController.getPetById);
  *             schema:
  *               $ref: '#/components/schemas/ApiErrorResponse'
  */
-router.post('/', PetController.createPet);
+router.post('/', petController.createPet);
 
 /**
  * @swagger
@@ -162,7 +164,7 @@ router.post('/', PetController.createPet);
  *             schema:
  *               $ref: '#/components/schemas/ApiErrorResponse'
  */
-router.put('/:id', PetController.updatePet);
+router.put('/:id', petController.updatePet);
 
 /**
  * @swagger
@@ -189,6 +191,6 @@ router.put('/:id', PetController.updatePet);
  *             schema:
  *               $ref: '#/components/schemas/ApiErrorResponse'
  */
-router.delete('/:id', PetController.deletePet);
+router.delete('/:id', petController.deletePet);
 
 export default router;

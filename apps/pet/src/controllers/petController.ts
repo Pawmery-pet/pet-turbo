@@ -5,7 +5,7 @@ import type { CreatePetRequest, UpdatePetRequest, GetPetsQuery } from '../types/
 
 export class PetController {
   // Get all pets with pagination and filtering
-  static async getAllPets(req: Request<{}, {}, {}, GetPetsQuery>, res: Response) {
+  async getAllPets(req: Request<{}, {}, {}, GetPetsQuery>, res: Response) {
     try {
       const page = parseInt(req.query.page || '1');
       const limit = parseInt(req.query.limit || '10');
@@ -34,7 +34,7 @@ export class PetController {
         prisma.pet.count({ where }),
       ]);
 
-      res.json({
+      return res.json({
         pets: pets.map(toPetResponse),
         total,
         page,
@@ -42,7 +42,7 @@ export class PetController {
       });
     } catch (error) {
       console.error('Error fetching pets:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'Internal Server Error',
         message: 'Failed to fetch pets',
         statusCode: 500,
@@ -51,7 +51,7 @@ export class PetController {
   }
 
   // Get pet by ID
-  static async getPetById(req: Request<{ id: string }>, res: Response) {
+  async getPetById(req: Request<{ id: string }>, res: Response) {
     try {
       const { id } = req.params;
 
@@ -67,10 +67,10 @@ export class PetController {
         });
       }
 
-      res.json(toPetResponse(pet));
+      return res.json(toPetResponse(pet));
     } catch (error) {
       console.error('Error fetching pet:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'Internal Server Error',
         message: 'Failed to fetch pet',
         statusCode: 500,
@@ -79,7 +79,7 @@ export class PetController {
   }
 
   // Get pets by user ID
-  static async getPetsByUserId(req: Request<{ userId: string }, {}, {}, Omit<GetPetsQuery, 'userId'>>, res: Response) {
+  async getPetsByUserId(req: Request<{ userId: string }, {}, {}, Omit<GetPetsQuery, 'userId'>>, res: Response) {
     try {
       const { userId } = req.params;
       const page = parseInt(req.query.page || '1');
@@ -106,7 +106,7 @@ export class PetController {
         prisma.pet.count({ where }),
       ]);
 
-      res.json({
+      return res.json({
         pets: pets.map(toPetResponse),
         total,
         page,
@@ -114,7 +114,7 @@ export class PetController {
       });
     } catch (error) {
       console.error('Error fetching pets by user ID:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'Internal Server Error',
         message: 'Failed to fetch pets',
         statusCode: 500,
@@ -123,7 +123,7 @@ export class PetController {
   }
 
   // Create new pet
-  static async createPet(req: Request<{}, {}, CreatePetRequest>, res: Response) {
+  async createPet(req: Request<{}, {}, CreatePetRequest>, res: Response) {
     try {
       const { name, species, breed, age, color, userId, description } = req.body;
 
@@ -140,18 +140,18 @@ export class PetController {
         data: {
           name,
           species,
-          breed,
-          age,
-          color,
+          breed: breed || null,
+          age: age || null,
+          color: color || null,
           userId,
-          description,
+          description: description || null,
         },
       });
 
-      res.status(201).json(toPetResponse(pet));
+      return res.status(201).json(toPetResponse(pet));
     } catch (error) {
       console.error('Error creating pet:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'Internal Server Error',
         message: 'Failed to create pet',
         statusCode: 500,
@@ -160,7 +160,7 @@ export class PetController {
   }
 
   // Update pet
-  static async updatePet(req: Request<{ id: string }, {}, UpdatePetRequest>, res: Response) {
+  async updatePet(req: Request<{ id: string }, {}, UpdatePetRequest>, res: Response) {
     try {
       const { id } = req.params;
       const { name, species, breed, age, color, userId, description } = req.body;
@@ -191,10 +191,10 @@ export class PetController {
         },
       });
 
-      res.json(toPetResponse(pet));
+      return res.json(toPetResponse(pet));
     } catch (error) {
       console.error('Error updating pet:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'Internal Server Error',
         message: 'Failed to update pet',
         statusCode: 500,
@@ -203,7 +203,7 @@ export class PetController {
   }
 
   // Delete pet
-  static async deletePet(req: Request<{ id: string }>, res: Response) {
+  async deletePet(req: Request<{ id: string }>, res: Response) {
     try {
       const { id } = req.params;
 
@@ -224,10 +224,10 @@ export class PetController {
         where: { id },
       });
 
-      res.status(204).send();
+      return res.status(204).send();
     } catch (error) {
       console.error('Error deleting pet:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'Internal Server Error',
         message: 'Failed to delete pet',
         statusCode: 500,

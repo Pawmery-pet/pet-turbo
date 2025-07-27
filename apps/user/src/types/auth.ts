@@ -1,4 +1,4 @@
-import type { Account, Session, VerificationToken, Authenticator } from '@prisma/client';
+import type { Account, Session, VerificationToken, Authenticator } from '../lib/prisma/.prisma';
 
 // Account types
 export interface CreateAccountRequest {
