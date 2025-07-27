@@ -7,8 +7,8 @@
 		"build": "tsc",
 		"start": "node dist/index.js",
 		"db:generate": "prisma generate --schema=src/lib/prisma/schema.prisma",
-		"db:push": "prisma db push",
-		"db:studio": "prisma studio",
+		"db:push": "prisma db push --schema=src/lib/prisma/schema.prisma",
+		"db:studio": "prisma studio --schema=src/lib/prisma/schema.prisma",
 		"lint": "echo 'No linting configured'",
 		"check-types": "tsc --noEmit"
 	},
