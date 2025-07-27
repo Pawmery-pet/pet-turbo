@@ -14,9 +14,6 @@ importers:
       husky:
         specifier: ^9.1.7
         version: 9.1.7
-      prettier:
-        specifier: ^3.6.2
-        version: 3.6.2
       turbo:
         specifier: ^2.5.5
         version: 2.5.5
@@ -633,10 +630,6 @@ packages:
   preact@10.24.3:
     resolution: {integrity: sha512-Z2dPnBnMUfyQfSQ+GBdsGa16hz35YmLmtTLhM169uW944hYL6xzTYkJjC07j+Wosz733pMWx0fgON3JNw1jJQA==}
 
-  prettier@3.6.2:
-    resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
-    engines: {node: '>=14'}
-
   react-dom@19.1.0:
     resolution: {integrity: sha512-Xs1hdnE+DyKgeHJeJznQmYMIBG3TKIHJJT95Q58nHLSrElKlGQqDTR2HQ9fx5CN/Gk6Vh/kupBTDLU11/nDk/g==}
     peerDependencies:
@@ -1168,8 +1161,6 @@ snapshots:
       preact: 10.24.3
 
   preact@10.24.3: {}
-
-  prettier@3.6.2: {}
 
   react-dom@19.1.0(react@19.1.0):
     dependencies:
