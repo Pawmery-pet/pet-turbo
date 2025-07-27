@@ -8,9 +8,9 @@ services:
     command: sleep infinity
     ports:
       - "3000:3000"
-    environment:
-      - NODE_ENV=development
-
+    env_file:
+      - devcontainer.env
+      
   mongodb:
     image: mongo:7
     restart: unless-stopped
