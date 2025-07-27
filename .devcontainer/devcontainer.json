@@ -10,5 +10,11 @@
 		"ghcr.io/devcontainers/features/github-cli:1": {}
 	},
 	"postCreateCommand": ".devcontainer/postCreate.sh",
-	"postStartCommand": ".devcontainer/postStart.sh"
+	"postStartCommand": ".devcontainer/postStart.sh",
+	"extensions": [
+		"ms-vscode-remote.remote-containers",
+		"ms-azuretools.vscode-docker",
+		"biomejs.biome",
+		"biomejs.biome"
+	]
 }
