@@ -4,7 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "tsx watch src/index.ts",
-		"build": "tsc",
+		"build": "pnpm db:generate && tsup",
 		"start": "node dist/index.js",
 		"db:generate": "prisma generate --schema=src/lib/prisma/schema.prisma",
 		"db:push": "prisma db push --schema=src/lib/prisma/schema.prisma",
@@ -28,6 +28,7 @@
 		"@types/swagger-jsdoc": "^6.0.4",
 		"@types/swagger-ui-express": "^4.1.8",
 		"prisma": "^5.22.0",
+		"tsup": "^8.5.0",
 		"tsx": "^4.19.2",
 		"typescript": "^5.8.3"
 	}
