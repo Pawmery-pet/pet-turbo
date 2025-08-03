@@ -1,16 +1,13 @@
-version: '3.8'
-
 services:
   workspace:
     image: mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm
     volumes:
       - ../..:/workspaces:cached
+      - workspace_config:/home/node
     command: sleep infinity
     ports:
       - "3000:3000"
-    env_file:
-      - devcontainer.env
-      
+
   mongo1:
     image: mongo:7.0
     command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
@@ -51,7 +48,6 @@ services:
       - "mongo3_data:/data/db"
       - "mongo3_config:/data/configdb"
 
-
   mongo-express:
     image: mongo-express:latest
     restart: unless-stopped
@@ -64,6 +60,7 @@ services:
       - mongo1
 
 volumes:
+  workspace_config:
   mongo1_data:
   mongo2_data:
   mongo3_data:
