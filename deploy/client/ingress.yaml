@@ -13,17 +13,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-  - host: pawmery.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: pawmery-client-service
-            port:
-              number: 80
-  - host: www.pawmery.com
+  - host: pawmery-client.dev.pawmery.pet
     http:
       paths:
       - path: /
