@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pawmery-user-ingress
+  labels:
+    app: pawmery-user
+    component: backend
+  annotations:
+    alb.ingress.kubernetes.io/target-type: "ip" 
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    external-dns.alpha.kubernetes.io/hostname: "user.dev.pawmery.pet"
+spec:
+  ingressClassName: alb
+  rules:
+  - host: user.dev.pawmery.pet
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: pawmery-user-service
+            port:
+              number: 80

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pawmery-user
+  labels:
+    app: pawmery-user
+    component: backend
+    environment: production
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: pawmery-user
+  template:
+    metadata:
+      labels:
+        app: pawmery-user
+        component: backend
+    spec:
+      containers:
+      - name: pawmery-user
+        image: 703290033012.dkr.ecr.ap-southeast-2.amazonaws.com/pet-image/user:a7d8e5ebe873b45dcacab2861d432456c945c9c9
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3010
+          name: http
+          protocol: TCP
+        env:
+        - name: PORT
+          value: "3010"
+        - name: CORS_ORIGIN
+          value: "https://pawmery-client.dev.pawmery.pet"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: pawmery-user-secret
+              key: DATABASE_URL
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3010
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      securityContext:
+        fsGroup: 1001
+      restartPolicy: Always
