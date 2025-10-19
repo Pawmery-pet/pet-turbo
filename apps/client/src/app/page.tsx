@@ -9,35 +9,35 @@ import { ServicesSection } from "@/components/landing/ServicesSection";
 import { SubscriptionTiers } from "@/components/landing/SubscriptionTiers";
 
 export default async function Page() {
-  const session = await getSession();
-  const isLoggedIn = !!session?.user;
-  const userEmail = session?.user?.email;
+	const session = await getSession();
+	const isLoggedIn = !!session?.user;
+	const userEmail = session?.user?.email;
 
-  return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <Header isLoggedIn={isLoggedIn} userEmail={userEmail || undefined} />
+	return (
+		<div className="min-h-screen">
+			{/* Header */}
+			<Header isLoggedIn={isLoggedIn} userEmail={userEmail || undefined} />
 
-      {/* Hero Section */}
-      <HeroSection isLoggedIn={isLoggedIn} />
+			{/* Hero Section */}
+			<HeroSection isLoggedIn={isLoggedIn} />
 
-      {/* Features Section */}
-      <FeaturesSection />
+			{/* Features Section */}
+			<FeaturesSection />
 
-      {/* Client-side sections (Pet Types, Video, Newsletter) */}
-      <ClientSections />
+			{/* Client-side sections (Pet Types, Video, Newsletter) */}
+			<ClientSections />
 
-      {/* Services Section */}
-      <ServicesSection />
+			{/* Services Section */}
+			<ServicesSection />
 
-      {/* Subscription Tiers */}
-      <SubscriptionTiers />
+			{/* Subscription Tiers */}
+			<SubscriptionTiers />
 
-      {/* Blog Section */}
-      <BlogSection />
+			{/* Blog Section */}
+			<BlogSection />
 
-      {/* Footer */}
-      <Footer />
-    </div>
-  );
+			{/* Footer */}
+			<Footer />
+		</div>
+	);
 }
