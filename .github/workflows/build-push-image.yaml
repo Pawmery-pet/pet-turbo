@@ -1,0 +1,112 @@
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'apps/**'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  meta:
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.detect-changes.outputs.apps }}
+      env: ${{ steps.determine-env.outputs.env }}
+      commit-hash: ${{ steps.commit-info.outputs.short_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Determine Environment
+        id: determine-env
+        run: |
+          if [ "${{ github.ref_name }}" == "main" ]; then
+            ENV="prod"
+          else
+            ENV="dev"
+          fi
+          echo "Environment: $ENV"
+          echo "env=$ENV" >> "$GITHUB_OUTPUT"
+
+      - name: Get Commit Info
+        id: commit-info
+        run: |
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          echo "Short SHA: $SHORT_SHA"
+          echo "short_sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Detect Changed Apps
+        id: detect-changes
+        run: |
+          # Get list of changed files
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          # Initialize apps array
+          APPS="[]"
+
+          # Check each app directory
+          for app in client pet user; do
+            if echo "$CHANGED_FILES" | grep -q "^apps/$app/"; then
+              echo "Detected changes in: $app"
+              if [ "$APPS" == "[]" ]; then
+                APPS="[\"$app\"]"
+              else
+                APPS=$(echo "$APPS" | sed "s/\]/, \"$app\"]/")
+              fi
+            fi
+          done
+
+          echo "Apps to build: $APPS"
+          echo "apps=$APPS" >> "$GITHUB_OUTPUT"
+
+  build-and-push:
+    needs: meta
+    runs-on: ubuntu-latest
+    if: needs.meta.outputs.apps != '[]'
+    strategy:
+      matrix:
+        app: ${{ fromJson(needs.meta.outputs.apps) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Info
+        run: |
+          echo "App: ${{ matrix.app }}"
+          echo "Environment: ${{ needs.meta.outputs.env }}"
+          echo "Commit Hash: ${{ needs.meta.outputs.commit-hash }}"
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Generate Docker tags
+        id: tags
+        run: |
+          REPO="ghcr.io/${{ github.repository_owner }}/${{ matrix.app }}"
+          ENV="${{ needs.meta.outputs.env }}"
+          SHA="${{ needs.meta.outputs.commit-hash }}"
+
+          TAGS="${REPO}:${ENV}-${SHA}"
+          TAGS="${TAGS},${REPO}:${ENV}-latest"
+          TAGS="${TAGS},${REPO}:${SHA}"
+
+          echo "Docker tags: $TAGS"
+          echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/build-push-action@v6
+        with:
+          push: true
+          context: .
+          file: apps/${{ matrix.app }}/Dockerfile
+          tags: ${{ steps.tags.outputs.tags }}
