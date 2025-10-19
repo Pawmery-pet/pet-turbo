@@ -1,5 +1,4 @@
 import { getSession } from "@/lib/auth-server";
-import { signOut } from "@/lib/auth-client";
 
 export default async function ProfilePage() {
 	const session = await getSession();
@@ -85,7 +84,9 @@ export default async function ProfilePage() {
 							</div>
 						</div>
 						<div className="mt-6">
-							<button className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">
+							<button
+							type="button"
+							className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">
 								Save Changes
 							</button>
 						</div>
