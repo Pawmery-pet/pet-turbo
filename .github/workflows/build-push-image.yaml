@@ -123,13 +123,14 @@ jobs:
       - name: Generate Docker tags
         id: tags
         run: |
-          REPO="ghcr.io/${{ github.repository_owner }}/pet-turbo/${{ matrix.app }}"
+          REPO="ghcr.io/${{ github.repository_owner }}/pet-turbo"
+          APP="${{ matrix.app }}"
           ENV="${{ needs.meta.outputs.env }}"
           SHA="${{ needs.meta.outputs.commit-hash }}"
 
-          TAGS="${REPO}:${ENV}-${SHA}"
-          TAGS="${TAGS},${REPO}:${ENV}-latest"
-          TAGS="${TAGS},${REPO}:${SHA}"
+          TAGS="${REPO}:${APP}-${ENV}-${SHA}"
+          TAGS="${TAGS},${REPO}:${APP}-${ENV}-latest"
+          TAGS="${TAGS},${REPO}:${APP}-${SHA}"
 
           echo "Docker tags: $TAGS"
           echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
