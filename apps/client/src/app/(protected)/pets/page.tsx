@@ -1,9 +1,9 @@
-import { auth } from "@/auth";
+import { getSession } from "@/lib/auth-server";
 import { petService } from "@/services/petService";
 import Link from "next/link";
 
 export default async function PetsPage() {
-	const session = await auth();
+	const session = await getSession();
 
 	// Fetch user's pets from the backend
 	let pets: any[] = [];

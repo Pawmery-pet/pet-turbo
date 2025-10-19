@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
+import { SignInWithProvider, SignOut } from '@/auth/components';
 
 interface HeaderProps {
   isLoggedIn?: boolean;
@@ -29,25 +30,13 @@ export function Header({ isLoggedIn = false, userEmail }: HeaderProps) {
                     Dashboard
                   </Button>
                 </Link>
-                <form action="/api/auth/signout" method="post" className="inline">
-                  <Button variant="outline" size="sm" className="text-white border-white hover:bg-white hover:text-black">
-                    Sign Out
-                  </Button>
-                </form>
+                <SignOut/>
               </>
             ) : (
-              <>
-                <Link href="/login">
-                  <Button variant="outline" size="sm" className="text-white border-white hover:bg-white hover:text-black">
-                    Login
-                  </Button>
-                </Link>
-                <Link href="/login">
-                  <Button variant="primary" size="sm">
-                    Get Started
-                  </Button>
-                </Link>
-              </>
+              <SignInWithProvider providers={[{
+                providerId: "pawmery-pet",
+                name: "Pawmery Pet"
+              }]} />
             )}
           </nav>
         </div>

@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { getSession } from "@/lib/auth-server";
 import { BlogSection } from "@/components/landing/BlogSection";
 import { ClientSections } from "@/components/landing/ClientSections";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
@@ -9,7 +9,7 @@ import { ServicesSection } from "@/components/landing/ServicesSection";
 import { SubscriptionTiers } from "@/components/landing/SubscriptionTiers";
 
 export default async function Page() {
-  const session = await auth();
+  const session = await getSession();
   const isLoggedIn = !!session?.user;
   const userEmail = session?.user?.email;
 

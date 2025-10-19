@@ -1,8 +1,8 @@
-import { auth } from "@/auth";
+import { getSession } from "@/lib/auth-server";
 import { CreateStoryClient } from "./CreateStoryClient";
 
 export default async function CreateStoryPage() {
-	const session = await auth();
+	const session = await getSession();
 
 	if (!session?.user) {
 		// This shouldn't happen in protected routes, but just in case

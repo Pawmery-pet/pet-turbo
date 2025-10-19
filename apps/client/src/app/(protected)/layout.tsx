@@ -1,14 +1,15 @@
-import { auth } from "@/auth";
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ReactNode } from "react";
+import Link from "next/link";
+import { getSession } from "@/lib/auth-server";
+import type { ReactNode } from "react";
+import { SignOut } from "@/auth/components";
 
 export default async function ProtectedLayout({
 	children,
 }: {
 	children: ReactNode;
 }) {
-	const session = await auth();
+	const session = await getSession();
 
 	if (!session?.user) {
 		redirect("/");
@@ -51,20 +52,7 @@ export default async function ProtectedLayout({
 							<span className="text-sm text-gray-700">
 								Welcome, {session.user.name || session.user.email}
 							</span>
-							<form
-								action={async () => {
-									"use server";
-									const { signOut } = await import("@/auth");
-									await signOut();
-								}}
-							>
-								<button
-									type="submit"
-									className="bg-red-600 text-white px-3 py-1 rounded-md text-sm hover:bg-red-700"
-								>
-									Sign out
-								</button>
-							</form>
+							<SignOut />
 						</div>
 					</div>
 				</div>

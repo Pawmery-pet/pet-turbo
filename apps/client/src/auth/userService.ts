@@ -15,6 +15,7 @@ export interface CreateUserRequest {
 	name?: string;
 	email?: string;
 	image?: string;
+	emailVerified?: Date | null;
 }
 
 export interface UpdateUserRequest {

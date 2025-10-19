@@ -1,10 +1,7 @@
-import { auth } from "@/auth";
 import Link from "next/link";
 import PendingPetJobs from "./PendingPetJobs";
 
 export default async function DashboardPage() {
-	const session = await auth();
-
 	return (
 		<div className="px-4 py-6 sm:px-0">
 			<div className="mb-6">

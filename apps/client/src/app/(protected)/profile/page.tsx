@@ -1,7 +1,8 @@
-import { auth } from "@/auth";
+import { getSession } from "@/lib/auth-server";
+import { signOut } from "@/lib/auth-client";
 
 export default async function ProfilePage() {
-	const session = await auth();
+	const session = await getSession();
 
 	return (
 		<div className="px-4 py-6 sm:px-0">
