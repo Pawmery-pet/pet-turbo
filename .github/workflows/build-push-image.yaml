@@ -123,7 +123,8 @@ jobs:
       - name: Generate Docker tags
         id: tags
         run: |
-          REPO="ghcr.io/${{ github.repository_owner }}/pet-turbo"
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO="ghcr.io/${OWNER}/pet-turbo"
           APP="${{ matrix.app }}"
           ENV="${{ needs.meta.outputs.env }}"
           SHA="${{ needs.meta.outputs.commit-hash }}"
