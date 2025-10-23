@@ -7,8 +7,6 @@ services:
       - ../..:/workspaces:cached
       - workspace_config:/home/node
     command: sleep infinity
-    ports:
-      - "3000:3000"
 
   mongo1:
     image: mongo:7.0
