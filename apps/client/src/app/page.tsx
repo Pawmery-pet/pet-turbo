@@ -15,28 +15,20 @@ export default async function Page() {
 
 	return (
 		<div className="min-h-screen">
-			{/* Header */}
 			<Header isLoggedIn={isLoggedIn} userEmail={userEmail || undefined} />
 
-			{/* Hero Section */}
 			<HeroSection isLoggedIn={isLoggedIn} />
 
-			{/* Features Section */}
 			<FeaturesSection />
 
-			{/* Client-side sections (Pet Types, Video, Newsletter) */}
 			<ClientSections />
 
-			{/* Services Section */}
 			<ServicesSection />
 
-			{/* Subscription Tiers */}
 			<SubscriptionTiers />
 
-			{/* Blog Section */}
 			<BlogSection />
 
-			{/* Footer */}
 			<Footer />
 		</div>
 	);
