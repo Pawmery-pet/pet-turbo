@@ -1,0 +1,9 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sanity-checks:
+    uses: ./.github/workflows/sanity-check.yaml

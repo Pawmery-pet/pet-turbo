@@ -84,7 +84,7 @@ pnpm format
 pnpm lint
 
 # Type checking
-pnpm check-types
+pnpm typecheck
 ```
 
 ## Architecture Notes
