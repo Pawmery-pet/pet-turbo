@@ -1,4 +1,4 @@
-name: Update Yarn Cache
+name: Update Cache
 
 on:
     workflow_dispatch:
