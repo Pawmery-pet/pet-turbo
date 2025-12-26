@@ -244,7 +244,8 @@ describe("LoggerService", () => {
 		});
 
 		it("should handle error trace with newlines", () => {
-			const errorTrace = "Error: Something went wrong\n    at line 1\n    at line 2";
+			const errorTrace =
+				"Error: Something went wrong\n    at line 1\n    at line 2";
 			logger.error("Error occurred", errorTrace, "ErrorContext");
 
 			const output = stderrSpy.mock.calls[0][0];
