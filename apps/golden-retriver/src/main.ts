@@ -1,6 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import {
-  FastifyAdapter,
+	FastifyAdapter,
 	type NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
