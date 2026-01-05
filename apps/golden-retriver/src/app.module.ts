@@ -56,6 +56,7 @@ class HttpExceptionFilter extends BaseExceptionFilter {
 		}),
 	],
 	controllers: [AppController],
+	exports: [AppConfigService],
 	providers: [
 		AppService,
 		AppConfigService,
@@ -72,6 +73,5 @@ class HttpExceptionFilter extends BaseExceptionFilter {
 			useClass: HttpExceptionFilter,
 		},
 	],
-	exports: [AppConfigService],
 })
 export class AppModule {}
