@@ -6,7 +6,10 @@ import { LoggerService } from "./logger";
 @ApiTags("App")
 @Controller()
 export class AppController {
-	constructor(private readonly appService: AppService,private readonly logger: LoggerService,) {}
+	constructor(
+		private readonly appService: AppService,
+		private readonly logger: LoggerService,
+	) {}
 
 	@ApiOperation({ summary: "Return a hello message" })
 	@ApiOkResponse({
@@ -18,7 +21,14 @@ export class AppController {
 	})
 	@Get()
 	getHello(): string {
-		return this.appService.getHello();
+		this.logger.info("GET / endpoint called", AppController.name);
+		this.logger.debug("Fetching hello message", AppController.name);
+
+		const message = this.appService.getHello();
+
+		this.logger.info("Successfully returned hello message", AppController.name);
+
+		return message;
 	}
 
 	@Post("users")
