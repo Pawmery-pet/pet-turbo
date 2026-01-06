@@ -29,6 +29,8 @@ type UserResponse = z.infer<typeof UserResponseSchema>;
 
 @Injectable()
 export class AppService {
+	constructor(private readonly logger: LoggerService) {}
+
 	getHello(): string {
 		return "Hello World!";
 	}
