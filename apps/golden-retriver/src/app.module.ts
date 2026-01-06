@@ -21,6 +21,7 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { DatabaseModule } from "./db/database.module";
 import { LoggerModule, LoggerService } from "./logger";
+import { TestModule } from "./test/test.module";
 
 @Catch(HttpException)
 class HttpExceptionFilter extends BaseExceptionFilter {
@@ -45,7 +46,7 @@ class HttpExceptionFilter extends BaseExceptionFilter {
 }
 
 @Module({
-	imports: [DatabaseModule, LoggerModule],
+	imports: [DatabaseModule, LoggerModule, TestModule],
 	controllers: [AppController],
 	providers: [
 		AppService,
