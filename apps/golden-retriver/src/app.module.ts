@@ -20,6 +20,7 @@ import {
 import { ZodError } from "zod";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { AppConfigService } from "./config/app-config.service";
 import { yamlConfigLoader } from "./config/config.loader";
 import { LoggerModule, LoggerService } from "./logger";
 
@@ -57,6 +58,7 @@ class HttpExceptionFilter extends BaseExceptionFilter {
 	controllers: [AppController],
 	providers: [
 		AppService,
+		AppConfigService,
 		{
 			provide: APP_PIPE,
 			useClass: ZodValidationPipe,
@@ -70,5 +72,6 @@ class HttpExceptionFilter extends BaseExceptionFilter {
 			useClass: HttpExceptionFilter,
 		},
 	],
+	exports: [AppConfigService],
 })
 export class AppModule {}
