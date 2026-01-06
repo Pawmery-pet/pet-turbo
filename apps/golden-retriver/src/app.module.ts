@@ -5,6 +5,7 @@ import {
 	Inject,
 	Module,
 } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
 import {
 	APP_FILTER,
 	APP_INTERCEPTOR,
@@ -20,6 +21,7 @@ import { ZodError } from "zod";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { DatabaseModule } from "./db/database.module";
+import { yamlConfigLoader } from "./config/config.loader";
 import { LoggerModule, LoggerService } from "./logger";
 import { TestModule } from "./test/test.module";
 
@@ -46,7 +48,17 @@ class HttpExceptionFilter extends BaseExceptionFilter {
 }
 
 @Module({
-	imports: [DatabaseModule, LoggerModule, TestModule],
+	imports: [
+		DatabaseModule,
+		LoggerModule, 
+		TestModule,
+		LoggerModule,
+		ConfigModule.forRoot({
+			isGlobal: true,
+			envFilePath: ".env",
+			load: [yamlConfigLoader],
+		}),
+	],
 	controllers: [AppController],
 	providers: [
 		AppService,
