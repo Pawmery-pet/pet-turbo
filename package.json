@@ -7,7 +7,6 @@
 		"lint": "turbo run lint",
 		"format": "biome format --write",
 		"typecheck": "turbo run typecheck",
-		"test": "turbo run test",
 		"prepare": "husky"
 	},
 	"devDependencies": {
@@ -19,5 +18,10 @@
 	"packageManager": "pnpm@9.0.0",
 	"engines": {
 		"node": ">=22"
+	},
+	"dependencies": {
+		"@fastify/swagger": "^9.6.1",
+		"@fastify/swagger-ui": "^5.2.3",
+		"@nestjs/swagger": "^11.2.3"
 	}
 }

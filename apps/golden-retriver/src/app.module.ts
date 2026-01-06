@@ -44,7 +44,7 @@ class HttpExceptionFilter extends BaseExceptionFilter {
 }
 
 @Module({
-	imports: [LoggerModule],
+	imports: [],
 	controllers: [AppController],
 	providers: [
 		AppService,
