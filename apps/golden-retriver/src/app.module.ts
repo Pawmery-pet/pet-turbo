@@ -19,6 +19,7 @@ import {
 import { ZodError } from "zod";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { DatabaseModule } from "./db/database.module";
 import { LoggerModule, LoggerService } from "./logger";
 
 @Catch(HttpException)
@@ -44,7 +45,7 @@ class HttpExceptionFilter extends BaseExceptionFilter {
 }
 
 @Module({
-	imports: [],
+	imports: [DatabaseModule, LoggerModule],
 	controllers: [AppController],
 	providers: [
 		AppService,
