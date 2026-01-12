@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  golden-retriver:
+    build:
+      context: ../..
+      dockerfile: apps/golden-retriver/Dockerfile
+    image: golden-retriver:latest
+    container_name: golden-retriver
+    ports:
+      - "3030:3030"
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3030/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - golden-retriver-network
+
+networks:
+  golden-retriver-network:
+    driver: bridge
