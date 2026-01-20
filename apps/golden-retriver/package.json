@@ -17,7 +17,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db:generate": "drizzle-kit generate --config ../../drizzle.config.cjs",
-    "db:migrate": "drizzle-kit migrate --config ../../drizzle.config.cjs"
+    "db:migrate": "drizzle-kit migrate --config ../../drizzle.config.cjs",
+    "lint": "biome lint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
