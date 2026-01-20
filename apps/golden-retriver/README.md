@@ -10,7 +10,7 @@ NestJS microservice with Fastify adapter for the pet-turbo monorepo.
 
 ## Configuration
 
-- **Port**: 3030 (configurable via `PORT` env var)
+- **Port**: 3010 (configurable via `PORT` env var)
 - **Swagger**: Available at `/swagger` when running
 
 ## Development
@@ -29,7 +29,7 @@ pnpm test         # Run tests
 docker build -f apps/golden-retriver/Dockerfile -t golden-retriver:latest .
 
 # Run the container
-docker run -d -p 3030:3030 --env-file apps/golden-retriver/.env --name golden-retriver golden-retriver:latest
+docker run -d -p 3010:3010 --env-file apps/golden-retriver/.env --name golden-retriver golden-retriver:latest
 
 # Or use docker-compose
 cd apps/golden-retriver

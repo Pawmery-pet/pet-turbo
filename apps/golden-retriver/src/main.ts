@@ -28,7 +28,7 @@ async function bootstrap() {
 		.get("/swagger/json", (_req, reply) => reply.send(swaggerDocument));
 
 	await app.listen({
-		port: Number.parseInt(process.env.PORT ?? "3030", 10),
+		port: Number.parseInt(process.env.PORT ?? "3010", 10),
 		host: "0.0.0.0",
 	});
 }

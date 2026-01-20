@@ -8,12 +8,12 @@ services:
     image: golden-retriver:latest
     container_name: golden-retriver
     ports:
-      - "3030:3030"
+      - "3010:3010"
     env_file:
       - .env
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3030/"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3010/"]
       interval: 30s
       timeout: 5s
       retries: 3
