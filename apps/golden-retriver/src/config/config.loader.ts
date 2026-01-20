@@ -12,5 +12,7 @@ export const yamlConfigLoader = () => {
 	const fileContents = readFileSync(configPath, "utf8");
 	const parsed = load(fileContents);
 
-	return (typeof parsed === "object" && parsed !== null) ? parsed as Record<string, unknown> : {};
+	return typeof parsed === "object" && parsed !== null
+		? (parsed as Record<string, unknown>)
+		: {};
 };
