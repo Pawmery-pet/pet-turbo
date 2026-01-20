@@ -6,7 +6,10 @@ import { LoggerService } from "./logger";
 @ApiTags("App")
 @Controller()
 export class AppController {
-	constructor(private readonly appService: AppService,private readonly logger: LoggerService,) {}
+	constructor(
+		private readonly appService: AppService,
+		private readonly logger: LoggerService,
+	) {}
 
 	@ApiOperation({ summary: "Return a hello message" })
 	@ApiOkResponse({
