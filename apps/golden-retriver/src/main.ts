@@ -5,12 +5,15 @@ import {
 } from "@nestjs/platform-fastify";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
+import { AppConfigService } from "./config/app-config.service";
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestFastifyApplication>(
 		AppModule,
 		new FastifyAdapter(),
 	);
+
+	const appConfig = app.get(AppConfigService);
 
 	const swaggerConfig = new DocumentBuilder()
 		.setTitle("Golden Retriever API")
@@ -27,7 +30,16 @@ async function bootstrap() {
 		.getInstance()
 		.get("/swagger/json", (_req, reply) => reply.send(swaggerDocument));
 
-	await app.listen(process.env.PORT ?? 3010);
+	const host = appConfig.getHost();
+	const port = appConfig.getPort();
+	const environment = appConfig.getEnvironment();
+
+	await app.listen(port, host);
+	// Basic startup log for visibility into configuration source.
+	// eslint-disable-next-line no-console
+	console.log(
+		`Server running in ${environment} mode at http://${host}:${port}`,
+	);
 }
 
 bootstrap();
