@@ -20,9 +20,11 @@ import {
 import { ZodError } from "zod";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { DatabaseModule } from "./db/database.module";
 import { AppConfigService } from "./config/app-config.service";
 import { yamlConfigLoader } from "./config/config.loader";
 import { LoggerModule, LoggerService } from "./logger";
+import { TestModule } from "./test/test.module";
 
 @Catch(HttpException)
 class HttpExceptionFilter extends BaseExceptionFilter {
@@ -48,7 +50,9 @@ class HttpExceptionFilter extends BaseExceptionFilter {
 
 @Module({
 	imports: [
-		LoggerModule,
+		DatabaseModule,
+		LoggerModule, 
+		TestModule,
 		ConfigModule.forRoot({
 			isGlobal: true,
 			envFilePath: ".env",
