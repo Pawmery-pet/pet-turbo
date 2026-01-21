@@ -53,7 +53,6 @@ class HttpExceptionFilter extends BaseExceptionFilter {
 		DatabaseModule,
 		LoggerModule, 
 		TestModule,
-		LoggerModule,
 		ConfigModule.forRoot({
 			isGlobal: true,
 			envFilePath: ".env",
