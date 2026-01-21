@@ -45,22 +45,4 @@ export class AppController {
 
 		return user;
 	}
-
-	@Post("users")
-	createUser(@Body() createUserDto: CreateUserDto): UserResponseDto {
-		this.logger.info("POST /users endpoint called", AppController.name);
-		this.logger.debug(
-			`Creating user: ${JSON.stringify(createUserDto)}`,
-			AppController.name,
-		);
-
-		const user = this.appService.createUser(createUserDto);
-
-		this.logger.info(
-			`Successfully created user with id: ${user.id}`,
-			AppController.name,
-		);
-
-		return user;
-	}
 }
