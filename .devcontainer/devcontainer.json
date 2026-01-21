@@ -11,10 +11,14 @@
 	},
 	"postCreateCommand": ".devcontainer/postCreate.sh",
 	"postStartCommand": ".devcontainer/postStart.sh",
-	"extensions": [
-		"ms-vscode-remote.remote-containers",
-		"ms-azuretools.vscode-docker",
-		"biomejs.biome",
-		"biomejs.biome"
-	]
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode-remote.remote-containers",
+				"ms-azuretools.vscode-docker",
+				"biomejs.biome",
+				"eamodio.gitlens"
+			]
+		}
+	},
 }
