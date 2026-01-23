@@ -8,6 +8,13 @@
       "when": 1767664779437,
       "tag": "0000_old_blade",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1769165687794,
+      "tag": "0001_init_better_auth_schema",
+      "breakpoints": true
     }
   ]
 }
