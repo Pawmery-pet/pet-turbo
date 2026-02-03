@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable } from "@nestjs/common";
-import { and, eq } from "drizzle-orm";
+import { and, eq, asc, desc } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { DRIZZLE } from "../db/db.constants";
 import * as schema from "../db/schema";
@@ -42,6 +42,47 @@ export class AuthService {
 				.limit(1);
 
 			return { ok: true, data: rows[0] ?? null };
+		}
+
+		if (body.op === "findMany") {
+			const query = this.db
+				.select(selectMap ?? undefined)
+				.from(table);
+
+			if (body.where && body.where.length > 0) {
+				query.where(this.buildWhere(table, body.where));
+			}
+
+			if (body.sortBy) {
+				const column = this.getColumn(table, body.sortBy.field);
+				query.orderBy(
+					body.sortBy.direction === "desc"
+						? desc(column as never)
+						: asc(column as never),
+				);
+			}
+
+			if (body.limit) {
+				query.limit(body.limit);
+			}
+
+			if (body.offset) {
+				query.offset(body.offset);
+			}
+
+			const rows = await query;
+			return { ok: true, data: rows };
+		}
+
+		if (body.op === "count") {
+			const query = this.db.select().from(table);
+
+			if (body.where && body.where.length > 0) {
+				query.where(this.buildWhere(table, body.where));
+			}
+
+			const rows = await query;
+			return { ok: true, data: rows.length };
 		}
 
 		throw new BadRequestException("Unsupported op");

@@ -11,7 +11,7 @@ export class AuthController {
 	}
 }
 
-export type AdapterOp = "create" | "findOne";
+export type AdapterOp = "create" | "findOne" | "findMany" | "count";
 export type AdapterModel = "user" | "session" | "account" | "verification";
 
 export type AdapterWhere = {
@@ -27,4 +27,10 @@ export type AdapterRequest = {
 	data?: Record<string, unknown>;
 	where?: AdapterWhere[];
 	select?: string[];
+	limit?: number;
+	offset?: number;
+	sortBy?: {
+		field: string;
+		direction: "asc" | "desc";
+	};
 };
