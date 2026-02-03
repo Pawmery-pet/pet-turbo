@@ -17,7 +17,10 @@ export type AdapterOp =
 	| "findMany"
 	| "count"
 	| "update"
-	| "delete";
+	| "delete"
+	| "updateMany"
+	| "deleteMany"
+	| "transaction";
 export type AdapterModel = "user" | "session" | "account" | "verification";
 
 export type AdapterWhere = {
@@ -40,4 +43,5 @@ export type AdapterRequest = {
 		field: string;
 		direction: "asc" | "desc";
 	};
+	items?: AdapterRequest[];
 };

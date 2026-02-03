@@ -106,6 +106,45 @@ export class AuthService {
 			return { ok: true, data: null };
 		}
 
+		if (body.op === "updateMany") {
+			if (!body.update) {
+				throw new BadRequestException("Missing update for updateMany");
+			}
+
+			const where = this.buildWhere(table, body.where);
+			const rows = await this.db
+				.update(table)
+				.set(body.update)
+				.where(where)
+				.returning({ count: table.id });
+
+			return { ok: true, data: rows.length };
+		}
+
+		if (body.op === "deleteMany") {
+			const where = this.buildWhere(table, body.where);
+			const rows = await this.db
+				.delete(table)
+				.where(where)
+				.returning({ count: table.id });
+
+			return { ok: true, data: rows.length };
+		}
+
+		if (body.op === "transaction") {
+			if (!body.items || body.items.length === 0) {
+				throw new BadRequestException("Missing items for transaction");
+			}
+
+			const results = [];
+			for (const item of body.items) {
+				const result = await this.handleAdapter(item);
+				results.push(result.data ?? null);
+			}
+
+			return { ok: true, data: results };
+		}
+
 		throw new BadRequestException("Unsupported op");
 	}
 
