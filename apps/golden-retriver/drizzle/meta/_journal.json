@@ -15,6 +15,13 @@
       "when": 1769165687794,
       "tag": "0001_init_better_auth_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770105881402,
+      "tag": "0002_long_mentor",
+      "breakpoints": true
     }
   ]
 }
