@@ -6,6 +6,7 @@ services:
     volumes:
       - ../..:/workspaces:cached
       - workspace_config:/home/node
+      - ~/.claude:/home/node
     command: sleep infinity
 
   mongo1:
