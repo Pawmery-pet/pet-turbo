@@ -85,6 +85,27 @@ export class AuthService {
 			return { ok: true, data: rows.length };
 		}
 
+		if (body.op === "update") {
+			if (!body.update) {
+				throw new BadRequestException("Missing update for update");
+			}
+
+			const where = this.buildWhere(table, body.where);
+			const [row] = await this.db
+				.update(table)
+				.set(body.update)
+				.where(where)
+				.returning(selectMap ?? undefined);
+
+			return { ok: true, data: row ?? null };
+		}
+
+		if (body.op === "delete") {
+			const where = this.buildWhere(table, body.where);
+			await this.db.delete(table).where(where);
+			return { ok: true, data: null };
+		}
+
 		throw new BadRequestException("Unsupported op");
 	}
 
