@@ -1,4 +1,110 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { and, eq } from "drizzle-orm";
+import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { DRIZZLE } from "../db/db.constants";
+import * as schema from "../db/schema";
+import {
+	type AdapterModel,
+	type AdapterRequest,
+	type AdapterWhere,
+} from "./auth.controller";
 
 @Injectable()
-export class AuthService {}
+export class AuthService {
+	constructor(
+		@Inject(DRIZZLE)
+		private readonly db: NodePgDatabase<typeof schema>,
+	) {}
+
+	async handleAdapter(body: AdapterRequest) {
+		const table = this.getTable(body.model);
+		const selectMap = this.getSelectMap(table, body.select);
+
+		if (body.op === "create") {
+			if (!body.data) {
+				throw new BadRequestException("Missing data for create");
+			}
+
+			const [row] = await this.db
+				.insert(table)
+				.values(body.data)
+				.returning(selectMap ?? undefined);
+
+			return { ok: true, data: row ?? null };
+		}
+
+		if (body.op === "findOne") {
+			const where = this.buildWhere(table, body.where);
+			const rows = await this.db
+				.select(selectMap ?? undefined)
+				.from(table)
+				.where(where)
+				.limit(1);
+
+			return { ok: true, data: rows[0] ?? null };
+		}
+
+		throw new BadRequestException("Unsupported op");
+	}
+
+	private getTable(model: AdapterModel) {
+		const tableMap = {
+			user: schema.user,
+			session: schema.session,
+			account: schema.account,
+			verification: schema.verification,
+		} as const;
+
+		const table = tableMap[model];
+		if (!table) {
+			throw new BadRequestException("Unknown model");
+		}
+
+		return table;
+	}
+
+	private getSelectMap(table: Record<string, unknown>, select?: string[]) {
+		if (!select || select.length === 0) {
+			return null;
+		}
+
+		const map: Record<string, unknown> = {};
+		for (const field of select) {
+			const column = this.getColumn(table, field);
+			map[field] = column;
+		}
+
+		return map;
+	}
+
+	private buildWhere(
+		table: Record<string, unknown>,
+		where?: AdapterWhere[],
+	) {
+		if (!where || where.length === 0) {
+			throw new BadRequestException("Missing where clause");
+		}
+
+		const conditions = where.map((item) => {
+			if (item.operator && item.operator !== "eq") {
+				throw new BadRequestException("Unsupported operator");
+			}
+			if (item.connector && item.connector !== "AND") {
+				throw new BadRequestException("Unsupported connector");
+			}
+
+			const column = this.getColumn(table, item.field);
+			return eq(column as never, item.value as never);
+		});
+
+		return and(...conditions);
+	}
+
+	private getColumn(table: Record<string, unknown>, field: string) {
+		const column = table[field];
+		if (!column) {
+			throw new BadRequestException("Unknown field");
+		}
+		return column;
+	}
+}
