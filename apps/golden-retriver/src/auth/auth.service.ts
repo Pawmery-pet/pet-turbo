@@ -25,7 +25,8 @@ export class AuthService {
 				throw new BadRequestException("Missing data for create");
 			}
 
-			const insert = this.db.insert(table).values(body.data as any);
+			const data = this.normalizeDates(body.model, body.data);
+			const insert = this.db.insert(table).values(data as any);
 			const [row] = selectMap
 				? await insert.returning(selectMap as any)
 				: await insert.returning();
@@ -91,9 +92,10 @@ export class AuthService {
 			}
 
 			const where = this.buildWhere(table, body.where);
+			const updatePayload = this.normalizeDates(body.model, body.update);
 			const update = this.db
 				.update(table)
-				.set(body.update as any)
+				.set(updatePayload as any)
 				.where(where);
 			const [row] = selectMap
 				? await update.returning(selectMap as any)
@@ -114,9 +116,10 @@ export class AuthService {
 			}
 
 			const where = this.buildWhere(table, body.where);
+			const updatePayload = this.normalizeDates(body.model, body.update);
 			const rows = await this.db
 				.update(table)
-				.set(body.update as any)
+				.set(updatePayload as any)
 				.where(where)
 				.returning({ count: table.id as any });
 
@@ -209,5 +212,35 @@ export class AuthService {
 			throw new BadRequestException("Unknown field");
 		}
 		return column;
+	}
+
+	private normalizeDates(
+		model: AdapterRequest["model"],
+		payload: Record<string, unknown>,
+	) {
+		const dateFieldsByModel: Record<string, string[]> = {
+			user: ["createdAt", "updatedAt", "lastLogin"],
+			session: ["createdAt", "updatedAt", "expiresAt"],
+			account: [
+				"createdAt",
+				"updatedAt",
+				"accessTokenExpiresAt",
+				"refreshTokenExpiresAt",
+			],
+			verification: ["createdAt", "updatedAt", "expiresAt"],
+		};
+
+		const dateFields = dateFieldsByModel[model] ?? [];
+		const next = { ...payload };
+		for (const field of dateFields) {
+			const value = next[field];
+			if (typeof value === "string") {
+				const parsed = new Date(value);
+				if (!Number.isNaN(parsed.getTime())) {
+					next[field] = parsed;
+				}
+			}
+		}
+		return next;
 	}
 }
