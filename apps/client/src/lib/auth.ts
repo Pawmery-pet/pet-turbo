@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { genericOAuth } from "better-auth/plugins";
+import { remoteAuthAdapter } from "./auth-adapter";
 
 export const Auth = {
 	OIDC: {
@@ -15,8 +16,7 @@ export const Auth = {
 };
 
 export const auth = betterAuth({
-	// TODO: Configure database adapter later for microservices architecture
-	// database: customAdapter(),
+	database: remoteAuthAdapter(),
 	emailAndPassword: {
 		enabled: false,
 	},
