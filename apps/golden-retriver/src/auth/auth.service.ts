@@ -17,7 +17,7 @@ export class AuthService {
 	) {}
 
 	async handleAdapter(body: AdapterRequest) {
-		const table = this.getTable(body.model);
+		const table = this.getTable(body.model) as any;
 		const selectMap = this.getSelectMap(table, body.select);
 
 		if (body.op === "create") {
@@ -25,29 +25,29 @@ export class AuthService {
 				throw new BadRequestException("Missing data for create");
 			}
 
-			const [row] = await this.db
-				.insert(table)
-				.values(body.data)
-				.returning(selectMap ?? undefined);
+			const insert = this.db.insert(table).values(body.data as any);
+			const [row] = selectMap
+				? await insert.returning(selectMap as any)
+				: await insert.returning();
 
 			return { ok: true, data: row ?? null };
 		}
 
 		if (body.op === "findOne") {
 			const where = this.buildWhere(table, body.where);
-			const rows = await this.db
-				.select(selectMap ?? undefined)
-				.from(table)
-				.where(where)
-				.limit(1);
+			const query = selectMap
+				? this.db.select(selectMap as any).from(table)
+				: this.db.select().from(table);
+
+			const rows = await query.where(where).limit(1);
 
 			return { ok: true, data: rows[0] ?? null };
 		}
 
 		if (body.op === "findMany") {
-			const query = this.db
-				.select(selectMap ?? undefined)
-				.from(table);
+			const query = selectMap
+				? this.db.select(selectMap as any).from(table)
+				: this.db.select().from(table);
 
 			if (body.where && body.where.length > 0) {
 				query.where(this.buildWhere(table, body.where));
@@ -91,11 +91,13 @@ export class AuthService {
 			}
 
 			const where = this.buildWhere(table, body.where);
-			const [row] = await this.db
+			const update = this.db
 				.update(table)
-				.set(body.update)
-				.where(where)
-				.returning(selectMap ?? undefined);
+				.set(body.update as any)
+				.where(where);
+			const [row] = selectMap
+				? await update.returning(selectMap as any)
+				: await update.returning();
 
 			return { ok: true, data: row ?? null };
 		}
@@ -114,9 +116,9 @@ export class AuthService {
 			const where = this.buildWhere(table, body.where);
 			const rows = await this.db
 				.update(table)
-				.set(body.update)
+				.set(body.update as any)
 				.where(where)
-				.returning({ count: table.id });
+				.returning({ count: table.id as any });
 
 			return { ok: true, data: rows.length };
 		}
@@ -126,7 +128,7 @@ export class AuthService {
 			const rows = await this.db
 				.delete(table)
 				.where(where)
-				.returning({ count: table.id });
+				.returning({ count: table.id as any });
 
 			return { ok: true, data: rows.length };
 		}
@@ -136,10 +138,10 @@ export class AuthService {
 				throw new BadRequestException("Missing items for transaction");
 			}
 
-			const results = [];
+			const results: unknown[] = [];
 			for (const item of body.items) {
 				const result = await this.handleAdapter(item);
-				results.push(result.data ?? null);
+				results.push((result as any).data ?? null);
 			}
 
 			return { ok: true, data: results };
