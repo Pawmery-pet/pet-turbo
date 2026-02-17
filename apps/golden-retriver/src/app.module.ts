@@ -25,6 +25,7 @@ import { AppConfigService } from "./config/app-config.service";
 import { yamlConfigLoader } from "./config/config.loader";
 import { LoggerModule, LoggerService } from "./logger";
 import { TestModule } from "./test/test.module";
+import { UserModule } from "./user/user.module";
 
 @Catch(HttpException)
 class HttpExceptionFilter extends BaseExceptionFilter {
@@ -53,6 +54,7 @@ class HttpExceptionFilter extends BaseExceptionFilter {
 		DatabaseModule,
 		LoggerModule, 
 		TestModule,
+		UserModule,
 		ConfigModule.forRoot({
 			isGlobal: true,
 			envFilePath: ".env",
