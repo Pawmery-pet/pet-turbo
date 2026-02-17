@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
 import { UserService } from "./user.service";
 
 @Controller("users")
@@ -18,5 +18,10 @@ export class UserController {
 			};
 		}
 		return this.userService.getUserByEmail(email);
+	}
+
+	@Post("sync")
+	sync(@Body() body: { sub?: string; email?: string }) {
+		return this.userService.syncUser(body);
 	}
 }

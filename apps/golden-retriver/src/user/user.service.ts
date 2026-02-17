@@ -3,6 +3,7 @@ import {
 	GatewayTimeoutException,
 	Injectable,
 	InternalServerErrorException,
+	NotFoundException,
 	ServiceUnavailableException,
 	UnauthorizedException,
 } from "@nestjs/common";
@@ -57,6 +58,40 @@ export class UserService {
 		return user ? this.mapUser(user) : null;
 	}
 
+	async syncUser(input: { sub?: string; email?: string }) {
+		const sub = input.sub?.trim();
+		const email = input.email?.trim();
+
+		if (!sub && !email) {
+			throw new BadRequestException("sync requires sub or email");
+		}
+
+		if (sub) {
+			const userFromSub = await this.tryGetBySub(sub);
+			if (userFromSub) {
+				return {
+					source: "sub",
+					user: userFromSub,
+				};
+			}
+		}
+
+		if (email) {
+			const userFromEmail = await this.getUserByEmail(email);
+			if (userFromEmail) {
+				return {
+					source: "email",
+					user: userFromEmail,
+				};
+			}
+		}
+
+		return {
+			source: "none",
+			user: null,
+		};
+	}
+
 	private mapUser(user: AuthentikUser) {
 		return {
 			id: String(user.pk),
@@ -95,6 +130,11 @@ export class UserService {
 
 				if (!response.ok) {
 					const body = await response.text();
+					if (response.status === 404) {
+						throw new NotFoundException(
+							`Authentik resource not found: ${body || path}`,
+						);
+					}
 					if (response.status === 401 || response.status === 403) {
 						throw new UnauthorizedException(
 							`Authentik API auth failed: ${response.status} ${body}`,
@@ -113,6 +153,7 @@ export class UserService {
 				return (await response.json()) as T;
 			} catch (error) {
 				if (
+					error instanceof NotFoundException ||
 					error instanceof UnauthorizedException ||
 					error instanceof BadRequestException
 				) {
@@ -149,5 +190,33 @@ export class UserService {
 		}
 		const parsed = Number(value);
 		return Number.isNaN(parsed) ? fallback : parsed;
+	}
+
+	private async tryGetBySub(sub: string) {
+		const candidates = this.resolveSubjectCandidates(sub);
+		for (const candidate of candidates) {
+			try {
+				return await this.getUserById(candidate);
+			} catch (error) {
+				if (error instanceof NotFoundException) {
+					continue;
+				}
+				throw error;
+			}
+		}
+		return null;
+	}
+
+	private resolveSubjectCandidates(sub: string) {
+		const values = new Set<string>();
+		values.add(sub);
+
+		const parts = sub.split(/[|:/]/).filter(Boolean);
+		const last = parts[parts.length - 1];
+		if (last) {
+			values.add(last);
+		}
+
+		return Array.from(values);
 	}
 }
