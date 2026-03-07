@@ -1,3 +1,4 @@
+jest.mock("./pet.repository", () => ({ PetRepository: class {} }));
 import { Test, type TestingModule } from "@nestjs/testing";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { PetService } from "./pet.service";
