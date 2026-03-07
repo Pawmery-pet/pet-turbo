@@ -66,6 +66,9 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "moduleNameMapper": {
+      "@paralleldrive/cuid2": "<rootDir>/__mocks__/@paralleldrive/cuid2.js"
+    },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
