@@ -60,3 +60,31 @@ export function SignOut() {
 		</button>
 	);
 }
+
+export function SignInButton({ label = "Get Started" }: { label?: string }) {
+	const [isLoading, setIsLoading] = useState(false);
+
+	return (
+		<button
+			type="button"
+			disabled={isLoading}
+			aria-busy={isLoading}
+			onClick={async () => {
+				setIsLoading(true);
+				try {
+					await authClient.signIn.oauth2({
+						providerId: "pawmery-pet",
+						callbackURL: "/dashboard",
+					});
+				} catch (error) {
+					console.error("Sign in failed:", error);
+				} finally {
+					setIsLoading(false);
+				}
+			}}
+			className="text-white text-base font-semibold px-8 py-4 rounded-xl bg-orange-500 hover:bg-orange-600 transition-all shadow-lg hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed"
+		>
+			{isLoading ? "Signing in..." : label}
+		</button>
+	);
+}
