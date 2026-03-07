@@ -1,9 +1,9 @@
+import type { Metadata } from "next";
 import "./globals.css";
 
-export const metadata = {
-	title: "Pawmery - Forever Friends",
-	description:
-		"Continue the beautiful story with your beloved pet. Keep their memory alive and find comfort in your everlasting bond.",
+export const metadata: Metadata = {
+	title: "Pawmery",
+	description: "Your pet. Your story. Your companion.",
 };
 
 export default function RootLayout({
@@ -13,10 +13,7 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en">
-			<body>
-				{children}
-				<footer className="fixed bottom-0 inset-x-0 text-center p-1 bg-white">{`@${new Date().getFullYear()} Pawmery Pet`}</footer>
-			</body>
+			<body>{children}</body>
 		</html>
 	);
 }
