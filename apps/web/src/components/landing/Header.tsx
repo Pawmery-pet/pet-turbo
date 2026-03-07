@@ -11,6 +11,7 @@ interface HeaderProps {
 
 export function Header({ isLoggedIn = false, userEmail }: HeaderProps) {
 	const [scrolled, setScrolled] = useState(false);
+	const [isSigningIn, setIsSigningIn] = useState(false);
 
 	useEffect(() => {
 		const onScroll = () => setScrolled(window.scrollY > 10);
@@ -18,7 +19,9 @@ export function Header({ isLoggedIn = false, userEmail }: HeaderProps) {
 		return () => window.removeEventListener("scroll", onScroll);
 	}, []);
 
+	// Both Sign in and Sign up use the same OAuth2 flow — the provider handles new vs returning users
 	const signIn = async () => {
+		setIsSigningIn(true);
 		try {
 			await authClient.signIn.oauth2({
 				providerId: "pawmery-pet",
@@ -26,6 +29,8 @@ export function Header({ isLoggedIn = false, userEmail }: HeaderProps) {
 			});
 		} catch (error) {
 			console.error("Sign in failed:", error);
+		} finally {
+			setIsSigningIn(false);
 		}
 	};
 
@@ -63,16 +68,18 @@ export function Header({ isLoggedIn = false, userEmail }: HeaderProps) {
 								<button
 									type="button"
 									onClick={signIn}
-									className="text-white text-sm font-medium px-4 py-2 rounded-lg border border-white hover:bg-white/10 transition-all"
+									disabled={isSigningIn}
+									className="text-white text-sm font-medium px-4 py-2 rounded-lg border border-white hover:bg-white/10 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
 								>
-									Sign in
+									{isSigningIn ? "Signing in..." : "Sign in"}
 								</button>
 								<button
 									type="button"
 									onClick={signIn}
-									className="text-white text-sm font-semibold px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 transition-all"
+									disabled={isSigningIn}
+									className="text-white text-sm font-semibold px-4 py-2 rounded-lg bg-orange-500 hover:bg-orange-600 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
 								>
-									Sign up
+									{isSigningIn ? "Signing in..." : "Sign up"}
 								</button>
 							</>
 						)}
