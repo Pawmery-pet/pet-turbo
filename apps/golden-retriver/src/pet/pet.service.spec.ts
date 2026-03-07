@@ -1,6 +1,8 @@
+jest.mock("./pet.schema", () => ({ pet: {} }));
+
 import { Test, type TestingModule } from "@nestjs/testing";
 import { NotFoundException, ForbiddenException } from "@nestjs/common";
-import { PetsService } from "./pets.service";
+import { PetService } from "./pet.service";
 import { DRIZZLE } from "../db/db.constants";
 
 const mockPet = {
@@ -21,20 +23,20 @@ const mockDb = {
 	delete: jest.fn(),
 };
 
-describe("PetsService", () => {
-	let service: PetsService;
+describe("PetService", () => {
+	let service: PetService;
 
 	beforeEach(async () => {
 		jest.clearAllMocks();
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
-				PetsService,
+				PetService,
 				{ provide: DRIZZLE, useValue: mockDb },
 			],
 		}).compile();
 
-		service = module.get<PetsService>(PetsService);
+		service = module.get<PetService>(PetService);
 	});
 
 	describe("create", () => {

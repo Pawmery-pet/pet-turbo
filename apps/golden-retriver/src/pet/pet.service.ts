@@ -8,11 +8,11 @@ import { and, eq } from "drizzle-orm";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { DRIZZLE } from "../db/db.constants";
 import * as schema from "../db/schema";
-import { pet } from "./pets.schema";
-import type { CreatePetDto, UpdatePetDto } from "./pets.dto";
+import { pet } from "./pet.schema";
+import type { CreatePetDto, UpdatePetDto } from "./pet.dto";
 
 @Injectable()
-export class PetsService {
+export class PetService {
 	constructor(
 		@Inject(DRIZZLE)
 		private readonly db: NodePgDatabase<typeof schema>,
