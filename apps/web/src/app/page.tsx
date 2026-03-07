@@ -1,12 +1,6 @@
 import { getSession } from "@/lib/auth-server";
-import { BlogSection } from "@/components/landing/BlogSection";
-import { ClientSections } from "@/components/landing/ClientSections";
-import { FeaturesSection } from "@/components/landing/FeaturesSection";
-import { Footer } from "@/components/landing/Footer";
 import { Header } from "@/components/landing/Header";
 import { HeroSection } from "@/components/landing/HeroSection";
-import { ServicesSection } from "@/components/landing/ServicesSection";
-import { SubscriptionTiers } from "@/components/landing/SubscriptionTiers";
 
 export default async function Page() {
 	const session = await getSession();
@@ -14,22 +8,9 @@ export default async function Page() {
 	const userEmail = session?.user?.email;
 
 	return (
-		<div className="min-h-screen">
+		<div>
 			<Header isLoggedIn={isLoggedIn} userEmail={userEmail || undefined} />
-
 			<HeroSection isLoggedIn={isLoggedIn} />
-
-			<FeaturesSection />
-
-			<ClientSections />
-
-			<ServicesSection />
-
-			<SubscriptionTiers />
-
-			<BlogSection />
-
-			<Footer />
 		</div>
 	);
 }
