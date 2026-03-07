@@ -1,9 +1,7 @@
-jest.mock("./pet.schema", () => ({ pet: {} }));
-
 import { Test, type TestingModule } from "@nestjs/testing";
-import { NotFoundException, ForbiddenException } from "@nestjs/common";
+import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { PetService } from "./pet.service";
-import { DRIZZLE } from "../db/db.constants";
+import { PetRepository } from "./pet.repository";
 
 const mockPet = {
 	id: "pet_1",
@@ -16,11 +14,12 @@ const mockPet = {
 	updatedAt: new Date(),
 };
 
-const mockDb = {
-	insert: jest.fn(),
-	select: jest.fn(),
-	update: jest.fn(),
-	delete: jest.fn(),
+const mockRepo = {
+	create: jest.fn().mockResolvedValue(mockPet),
+	findAllByUser: jest.fn().mockResolvedValue([mockPet]),
+	findById: jest.fn().mockResolvedValue(mockPet),
+	update: jest.fn().mockResolvedValue({ ...mockPet, name: "Max" }),
+	remove: jest.fn().mockResolvedValue(undefined),
 };
 
 describe("PetService", () => {
@@ -32,7 +31,7 @@ describe("PetService", () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				PetService,
-				{ provide: DRIZZLE, useValue: mockDb },
+				{ provide: PetRepository, useValue: mockRepo },
 			],
 		}).compile();
 
@@ -41,96 +40,51 @@ describe("PetService", () => {
 
 	describe("create", () => {
 		it("should create and return a pet", async () => {
-			const returning = jest.fn().mockResolvedValue([mockPet]);
-			const values = jest.fn().mockReturnValue({ returning });
-			mockDb.insert.mockReturnValue({ values });
-
 			const result = await service.create({
 				userId: "user_1",
 				name: "Buddy",
 				type: "dog",
 				breed: "Golden Retriever",
 			});
-
 			expect(result).toEqual(mockPet);
+			expect(mockRepo.create).toHaveBeenCalledTimes(1);
 		});
 	});
 
 	describe("list", () => {
 		it("should return pets for a user", async () => {
-			const where = jest.fn().mockResolvedValue([mockPet]);
-			const from = jest.fn().mockReturnValue({ where });
-			mockDb.select.mockReturnValue({ from });
-
 			const result = await service.list("user_1");
-
 			expect(result).toEqual([mockPet]);
+			expect(mockRepo.findAllByUser).toHaveBeenCalledWith("user_1");
 		});
 	});
 
 	describe("get", () => {
-		it("should return a pet by id for the correct user", async () => {
-			const limit = jest.fn().mockResolvedValue([mockPet]);
-			const where = jest.fn().mockReturnValue({ limit });
-			const from = jest.fn().mockReturnValue({ where });
-			mockDb.select.mockReturnValue({ from });
-
+		it("should return a pet for the correct user", async () => {
 			const result = await service.get("pet_1", "user_1");
-
 			expect(result).toEqual(mockPet);
 		});
 
 		it("should throw NotFoundException if pet not found", async () => {
-			const limit = jest.fn().mockResolvedValue([]);
-			const where = jest.fn().mockReturnValue({ limit });
-			const from = jest.fn().mockReturnValue({ where });
-			mockDb.select.mockReturnValue({ from });
-
-			await expect(service.get("pet_999", "user_1")).rejects.toThrow(
-				NotFoundException,
-			);
+			mockRepo.findById.mockResolvedValueOnce(null);
+			await expect(service.get("pet_999", "user_1")).rejects.toThrow(NotFoundException);
 		});
 
 		it("should throw ForbiddenException if pet belongs to another user", async () => {
-			const limit = jest.fn().mockResolvedValue([{ ...mockPet, userId: "user_2" }]);
-			const where = jest.fn().mockReturnValue({ limit });
-			const from = jest.fn().mockReturnValue({ where });
-			mockDb.select.mockReturnValue({ from });
-
-			await expect(service.get("pet_1", "user_1")).rejects.toThrow(
-				ForbiddenException,
-			);
+			mockRepo.findById.mockResolvedValueOnce({ ...mockPet, userId: "user_2" });
+			await expect(service.get("pet_1", "user_1")).rejects.toThrow(ForbiddenException);
 		});
 	});
 
 	describe("update", () => {
 		it("should update and return the pet", async () => {
-			const limit = jest.fn().mockResolvedValue([mockPet]);
-			const where = jest.fn().mockReturnValue({ limit });
-			const from = jest.fn().mockReturnValue({ where });
-			mockDb.select.mockReturnValue({ from });
-
-			const returning = jest.fn().mockResolvedValue([{ ...mockPet, name: "Max" }]);
-			const whereUpdate = jest.fn().mockReturnValue({ returning });
-			const set = jest.fn().mockReturnValue({ where: whereUpdate });
-			mockDb.update.mockReturnValue({ set });
-
 			const result = await service.update("pet_1", "user_1", { name: "Max" });
-
 			expect(result.name).toBe("Max");
 		});
 	});
 
 	describe("remove", () => {
-		it("should delete the pet", async () => {
-			const limit = jest.fn().mockResolvedValue([mockPet]);
-			const where = jest.fn().mockReturnValue({ limit });
-			const from = jest.fn().mockReturnValue({ where });
-			mockDb.select.mockReturnValue({ from });
-
-			const whereDelete = jest.fn().mockResolvedValue(undefined);
-			mockDb.delete.mockReturnValue({ where: whereDelete });
-
+		it("should remove the pet", async () => {
 			await expect(service.remove("pet_1", "user_1")).resolves.not.toThrow();
 		});
 	});
