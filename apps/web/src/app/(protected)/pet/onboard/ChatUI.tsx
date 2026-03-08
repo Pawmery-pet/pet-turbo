@@ -17,8 +17,32 @@ export function ChatUI({ userId, threadId }: ChatUIProps) {
 	const [loading, setLoading] = useState(false);
 	const bottomRef = useRef<HTMLDivElement>(null);
 
+	// Hidden context prepended to every API call — never shown in the UI
+	const hiddenContext: Message = {
+		role: "user",
+		content: `[SYSTEM] Owner userId: ${userId}. Start the onboarding conversation.`,
+	};
+
+	async function callAgent(visibleMessages: Message[]) {
+		const res = await fetch("/api/agent/agents/pet-onboarding/generate", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				messages: [hiddenContext, ...visibleMessages],
+				threadId,
+				resourceId: userId,
+			}),
+		});
+		const data = await res.json() as { text?: string; error?: string };
+		return data.text ?? "Sorry, something went wrong.";
+	}
+
+	// Trigger agent greeting on mount without showing anything in chat yet
 	useEffect(() => {
-		sendMessage(`My user ID is ${userId}. Hello, I'd like to register my pet.`);
+		setLoading(true);
+		callAgent([])
+			.then((text) => setMessages([{ role: "assistant", content: text }]))
+			.finally(() => setLoading(false));
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -27,25 +51,13 @@ export function ChatUI({ userId, threadId }: ChatUIProps) {
 	}, [messages]);
 
 	async function sendMessage(text: string) {
-		const newMessages: Message[] = [...messages, { role: "user", content: text }];
-		setMessages(newMessages);
+		const visibleMessages: Message[] = [...messages, { role: "user", content: text }];
+		setMessages(visibleMessages);
 		setInput("");
 		setLoading(true);
 		try {
-			const res = await fetch("/api/agent/agents/pet-onboarding/generate", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					messages: newMessages,
-					threadId,
-					resourceId: userId,
-				}),
-			});
-			const data = await res.json() as { text?: string; error?: string };
-			setMessages((prev) => [
-				...prev,
-				{ role: "assistant", content: data.text ?? "Sorry, something went wrong." },
-			]);
+			const reply = await callAgent(visibleMessages);
+			setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
 		} finally {
 			setLoading(false);
 		}
