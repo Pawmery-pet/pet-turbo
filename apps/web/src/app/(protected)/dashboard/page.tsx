@@ -33,7 +33,7 @@ function EmptyState() {
 				Register your first pet to get started.
 			</p>
 			<Link
-				href="/pets/register"
+				href="/pet/register"
 				className="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-lg transition-colors"
 			>
 				Register a pet
@@ -62,7 +62,7 @@ export default async function DashboardPage() {
 					<div className="flex items-center justify-between mb-6">
 						<h2 className="text-lg font-semibold text-gray-900">Your Pets</h2>
 						<Link
-							href="/pets/register"
+							href="/pet/register"
 							className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-lg transition-colors"
 						>
 							+ Add pet
