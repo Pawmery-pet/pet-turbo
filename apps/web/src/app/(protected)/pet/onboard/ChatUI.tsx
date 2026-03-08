@@ -23,12 +23,12 @@ export function ChatUI({ userId, threadId }: ChatUIProps) {
 		content: `[SYSTEM] Owner userId: ${userId}. Start the onboarding conversation.`,
 	};
 
-	async function callAgent(visibleMessages: Message[]) {
+	async function callAgent(message: Message) {
 		const res = await fetch("/api/agent/agents/pet-onboarding/generate", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({
-				messages: [hiddenContext, ...visibleMessages],
+				messages: [message],
 				threadId,
 				resourceId: userId,
 			}),
@@ -37,10 +37,10 @@ export function ChatUI({ userId, threadId }: ChatUIProps) {
 		return data.text ?? "Sorry, something went wrong.";
 	}
 
-	// Trigger agent greeting on mount without showing anything in chat yet
+	// Trigger agent greeting on mount — hidden context seeds the thread, only assistant reply is shown
 	useEffect(() => {
 		setLoading(true);
-		callAgent([])
+		callAgent(hiddenContext)
 			.then((text) => setMessages([{ role: "assistant", content: text }]))
 			.finally(() => setLoading(false));
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -51,12 +51,13 @@ export function ChatUI({ userId, threadId }: ChatUIProps) {
 	}, [messages]);
 
 	async function sendMessage(text: string) {
-		const visibleMessages: Message[] = [...messages, { role: "user", content: text }];
-		setMessages(visibleMessages);
+		const userMsg: Message = { role: "user", content: text };
+		setMessages((prev) => [...prev, userMsg]);
 		setInput("");
 		setLoading(true);
 		try {
-			const reply = await callAgent(visibleMessages);
+			// Only send the new message — Mastra memory loads full thread history (incl. tool calls)
+			const reply = await callAgent(userMsg);
 			setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
 		} finally {
 			setLoading(false);
