@@ -39,3 +39,17 @@ export const PetSchema = z.object({
 	createdAt: z.coerce.date(),
 	updatedAt: z.coerce.date(),
 });
+
+export const CreatePetProfileSchema = z.object({
+	userId: z.string().min(1),
+	traits: z.record(z.string(), z.number()),
+	narrative: z.string().min(1),
+});
+
+export const PetProfileSchema = z.object({
+	id: z.string(),
+	petId: z.string(),
+	traits: z.record(z.string(), z.number()),
+	narrative: z.string(),
+	createdAt: z.coerce.date(),
+});

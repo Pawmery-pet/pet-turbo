@@ -1,4 +1,4 @@
-import type { CreatePetInput, UpdatePetInput, Pet } from "./types";
+import type { CreatePetInput, UpdatePetInput, Pet, PetProfile, CreatePetProfileInput } from "./types";
 
 export class PetClient {
 	constructor(private readonly baseUrl: string) {}
@@ -33,5 +33,17 @@ export class PetClient {
 
 	remove(id: string, userId: string): Promise<void> {
 		return this.request<void>(`/pet/${id}`, "DELETE", { userId });
+	}
+
+	createProfile(petId: string, dto: CreatePetProfileInput): Promise<PetProfile> {
+		return this.request<PetProfile>(`/pet/${petId}/profile`, "POST", dto);
+	}
+
+	getProfile(petId: string): Promise<PetProfile> {
+		return this.request<PetProfile>(`/pet/${petId}/profile`, "GET");
+	}
+
+	getProfileHistory(petId: string): Promise<PetProfile[]> {
+		return this.request<PetProfile[]>(`/pet/${petId}/profile/history`, "GET");
 	}
 }
