@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PetProfileRepository } from "./pet-profile.repository";
 import { PetRepository } from "./pet.repository";
 import type { CreatePetProfileInput } from "@repo/pet-client";
@@ -13,7 +13,8 @@ export class PetProfileService {
 	async create(petId: string, userId: string, dto: CreatePetProfileInput) {
 		const pet = await this.petRepo.findById(petId);
 		if (!pet) throw new NotFoundException("Pet not found");
-		await this.petRepo.update(petId, userId, { status: "active" });
+		const updated = await this.petRepo.update(petId, userId, { status: "active" });
+		if (!updated) throw new ForbiddenException();
 		return this.profileRepo.create(petId, dto);
 	}
 

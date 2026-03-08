@@ -27,6 +27,21 @@ export class PetController {
 		return this.service.list(dto.userId);
 	}
 
+	@Post(":id/profile")
+	createProfile(@Param("id") id: string, @Body() dto: CreatePetProfileDto) {
+		return this.profileService.create(id, dto.userId, dto);
+	}
+
+	@Get(":id/profile")
+	getProfile(@Param("id") id: string) {
+		return this.profileService.getLatest(id);
+	}
+
+	@Get(":id/profile/history")
+	getProfileHistory(@Param("id") id: string) {
+		return this.profileService.getHistory(id);
+	}
+
 	@Post(":id")
 	get(@Param("id") id: string, @Body() dto: GetPetDto) {
 		return this.service.get(id, dto.userId);
@@ -41,20 +56,5 @@ export class PetController {
 	@Delete(":id")
 	remove(@Param("id") id: string, @Body() dto: DeletePetDto) {
 		return this.service.remove(id, dto.userId);
-	}
-
-	@Post(":id/profile")
-	createProfile(@Param("id") id: string, @Body() dto: CreatePetProfileDto) {
-		return this.profileService.create(id, dto.userId, dto);
-	}
-
-	@Get(":id/profile")
-	getProfile(@Param("id") id: string) {
-		return this.profileService.getLatest(id);
-	}
-
-	@Get(":id/profile/history")
-	getProfileHistory(@Param("id") id: string) {
-		return this.profileService.getHistory(id);
 	}
 }
