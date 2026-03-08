@@ -2,11 +2,7 @@ import { pgEnum, pgTable, text, timestamp, index } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 
 export const petTypeEnum = pgEnum("pet_type", ["dog", "cat", "bird"]);
-export const petStatusEnum = pgEnum("pet_status", [
-	"registered",
-	"survey_started",
-	"activated",
-]);
+export const petStatusEnum = pgEnum("pet_status", ["registered", "active"]);
 
 export const pet = pgTable(
 	"pet",
