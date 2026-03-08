@@ -27,7 +27,7 @@ export default async function ProtectedLayout({
 							<span className="text-xl font-bold text-gray-900">Pawmery</span>
 						</Link>
 						<div className="flex items-center gap-4">
-							<span className="text-sm text-gray-500">
+							<span className="text-sm text-gray-500" title={session.user.id}>
 								{session.user.name || session.user.email}
 							</span>
 							<SignOut />
