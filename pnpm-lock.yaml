@@ -54,6 +54,9 @@ importers:
       '@repo/pet-client':
         specifier: workspace:*
         version: link:../../packages/pet-client
+      p-map:
+        specifier: ^7.0.4
+        version: 7.0.4
       zod:
         specifier: ^4
         version: 4.2.1
