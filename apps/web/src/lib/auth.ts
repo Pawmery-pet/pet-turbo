@@ -1,4 +1,5 @@
 import { betterAuth } from "better-auth";
+import { nextCookies } from "better-auth/next-js";
 import { genericOAuth } from "better-auth/plugins";
 
 export const Auth = {
@@ -24,7 +25,14 @@ export const auth = betterAuth({
 		genericOAuth({
 			config: [Auth.OIDC],
 		}),
+		nextCookies(),
 	],
+	session: {
+		cookieCache: {
+			enabled: true,
+			maxAge: 7 * 24 * 60 * 60
+		}
+	},
 	trustedOrigins: [Auth.Url, ...Auth.TrustedOrigins],
 });
 
