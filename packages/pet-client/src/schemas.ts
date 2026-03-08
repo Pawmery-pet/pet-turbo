@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const PetTypeSchema = z.enum(["dog", "cat", "bird"]);
+export const PetTypeSchema = z.enum(["dog", "cat", "bird", "rabbit", "sheep"]);
 export const PetStatusSchema = z.enum(["registered", "active"]);
 
 export const CreatePetSchema = z.object({
