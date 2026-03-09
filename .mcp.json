@@ -1,16 +1,15 @@
 {
   "mcpServers": {
-    "chrome-devtools": {
-      "command": "npx",
-      "args": ["chrome-devtools-mcp@latest"]
-    },
-    "affine-mcp": {
-      "command": "affine-mcp"
-    },
     "mastra": {
       "type": "stdio",
       "command": "npx",
       "args": ["-y", "@mastra/mcp-docs-server@latest"]
+    },
+    "chrome-devtools": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["chrome-devtools-mcp@latest", "--autoConnect"],
+      "env": {}
     }
   }
 }

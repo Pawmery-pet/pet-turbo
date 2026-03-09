@@ -2,7 +2,7 @@
 
 import { DefaultChatTransport } from "ai";
 import { useChat } from "@ai-sdk/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface PetOnboardingPageProps {
 	userId: string;
@@ -11,12 +11,16 @@ interface PetOnboardingPageProps {
 export function PetOnboardingPage({ userId }: PetOnboardingPageProps) {
 	const [input, setInput] = useState("");
 
-	const { messages, status, sendMessage } = useChat({
-		transport: new DefaultChatTransport({
-			api: "/api/agent/agents/pet-onboarding/stream",
-			body: { resourceId: userId },
-		}),
-	});
+	const transport = useMemo(
+		() =>
+			new DefaultChatTransport({
+				api: "/api/agent/agents/pet-onboarding/stream",
+				body: { resourceId: userId },
+			}),
+		[userId],
+	);
+
+	const { messages, status, sendMessage } = useChat({ transport });
 
 	return (
 		<div className="flex flex-col gap-4 p-4">

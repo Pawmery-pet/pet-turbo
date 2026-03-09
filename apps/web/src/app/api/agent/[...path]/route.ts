@@ -1,9 +1,19 @@
+import { getSession } from "@/lib/auth-server";
+
 const BORDER_COLLIE_URL = process.env.BORDER_COLLIE_URL ?? "http://localhost:3030";
 
 export async function POST(
 	req: Request,
 	{ params }: { params: Promise<{ path: string[] }> },
 ) {
+	const session = await getSession();
+	if (!session?.user?.id) {
+		return new Response(JSON.stringify({ error: "Unauthorized" }), {
+			status: 401,
+			headers: { "Content-Type": "application/json" },
+		});
+	}
+
 	const { path } = await params;
 	const upstream = `${BORDER_COLLIE_URL}/api/${path.join("/")}`;
 	const raw = await req.text();
@@ -11,7 +21,10 @@ export async function POST(
 	let finalBody = raw;
 	try {
 		const parsed = JSON.parse(raw);
-		if (parsed.resourceId && Array.isArray(parsed.messages)) {
+		// Always override resourceId from session — never trust the client
+		parsed.resourceId = session.user.id;
+
+		if (Array.isArray(parsed.messages)) {
 			const alreadyInjected = parsed.messages.some(
 				(m: { id?: string }) => m.id === "system-userid",
 			);
@@ -24,9 +37,9 @@ export async function POST(
 					},
 					...parsed.messages,
 				];
-				finalBody = JSON.stringify(parsed);
 			}
 		}
+		finalBody = JSON.stringify(parsed);
 	} catch {
 		// not JSON, forward as-is
 	}
@@ -49,6 +62,14 @@ export async function GET(
 	req: Request,
 	{ params }: { params: Promise<{ path: string[] }> },
 ) {
+	const session = await getSession();
+	if (!session?.user?.id) {
+		return new Response(JSON.stringify({ error: "Unauthorized" }), {
+			status: 401,
+			headers: { "Content-Type": "application/json" },
+		});
+	}
+
 	const { path } = await params;
 	const upstream = `${BORDER_COLLIE_URL}/api/${path.join("/")}`;
 	const res = await fetch(upstream);
