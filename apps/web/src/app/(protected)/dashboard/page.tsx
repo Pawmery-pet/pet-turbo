@@ -1,101 +1,80 @@
+import { getSession } from "@/lib/auth-server";
+import { PetClient } from "@repo/pet-client";
 import Link from "next/link";
-import PendingPetJobs from "./PendingPetJobs";
+import type { Pet } from "@repo/pet-client";
+
+const petClient = new PetClient(
+	process.env.PET_SERVICE_URL ?? "http://localhost:3020",
+);
+
+function PetCard({ pet }: { pet: Pet }) {
+	return (
+		<div className="bg-white rounded-xl border border-gray-100 p-5 flex items-center gap-4 hover:shadow-sm transition-shadow">
+			<div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center text-xl">
+				{pet.type === "dog" ? "🐶" : pet.type === "cat" ? "🐱" : "🐦"}
+			</div>
+			<div className="flex-1 min-w-0">
+				<p className="font-semibold text-gray-900 truncate">{pet.name}</p>
+				<p className="text-sm text-gray-500 capitalize">{pet.breed}</p>
+			</div>
+			<span className="text-xs text-gray-400 capitalize bg-gray-50 px-2 py-1 rounded-full">
+				{pet.status.replace("_", " ")}
+			</span>
+		</div>
+	);
+}
+
+function EmptyState() {
+	return (
+		<div className="flex flex-col items-center justify-center py-20 text-center">
+			<div className="text-5xl mb-4">🐾</div>
+			<h2 className="text-xl font-semibold text-gray-900 mb-2">No pets yet</h2>
+			<p className="text-gray-500 mb-6 max-w-xs">
+				Register your first pet to get started.
+			</p>
+			<Link
+				href="/pet/onboard"
+				className="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-lg transition-colors"
+			>
+				Register a pet
+			</Link>
+		</div>
+	);
+}
 
 export default async function DashboardPage() {
+	const session = await getSession();
+	const userId = session!.user.id;
+
+	let pets: Pet[] = [];
+	try {
+		pets = await petClient.list(userId);
+	} catch {
+		// golden-retriver unreachable — show empty state
+	}
+
 	return (
-		<div className="px-4 py-6 sm:px-0">
-			<div className="mb-6">
-				<h2 className="text-2xl font-bold text-gray-900 mb-2">
-					Your Forever Friends
-				</h2>
-				<p className="text-gray-600">
-					Welcome to your Pawmery space. Continue the beautiful stories with
-					your beloved pets and cherish your ongoing bond.
-				</p>
-			</div>
-
-			{/* Pending Pet Jobs Section */}
-			<PendingPetJobs />
-
-			{/* Quick Actions */}
-			<div className="mb-8">
-				<h3 className="text-lg font-semibold text-gray-900 mb-4">
-					Ways to Connect
-				</h3>
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-					<Link
-						href="/pets/create-story"
-						className="bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 transition-colors text-center"
-					>
-						<div className="text-2xl mb-2">✨</div>
-						<h4 className="font-semibold mb-1">Start Their Story</h4>
-						<p className="text-sm opacity-90">
-							Begin preserving your pet's precious memories
-						</p>
-					</Link>
-
-					<Link
-						href="/pets"
-						className="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 transition-colors text-center"
-					>
-						<div className="text-2xl mb-2">💝</div>
-						<h4 className="font-semibold mb-1">Share a Moment</h4>
-						<p className="text-sm opacity-90">Continue your journey together</p>
-					</Link>
-
-					<Link
-						href="/pets"
-						className="bg-purple-600 text-white p-4 rounded-lg hover:bg-purple-700 transition-colors text-center"
-					>
-						<div className="text-2xl mb-2">🐾</div>
-						<h4 className="font-semibold mb-1">Visit Your Pets</h4>
-						<p className="text-sm opacity-90">See all your forever friends</p>
-					</Link>
-				</div>
-			</div>
-
-			{/* Stats */}
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-				<div className="bg-white p-6 rounded-lg shadow">
-					<h3 className="text-lg font-semibold text-gray-900 mb-2">
-						Forever Friends
-					</h3>
-					<p className="text-3xl font-bold text-blue-600">0</p>
-					<p className="text-sm text-gray-500">Stories started</p>
-				</div>
-
-				<div className="bg-white p-6 rounded-lg shadow">
-					<h3 className="text-lg font-semibold text-gray-900 mb-2">
-						Shared Moments
-					</h3>
-					<p className="text-3xl font-bold text-green-600">0</p>
-					<p className="text-sm text-gray-500">This week</p>
-				</div>
-
-				<div className="bg-white p-6 rounded-lg shadow">
-					<h3 className="text-lg font-semibold text-gray-900 mb-2">
-						Precious Memories
-					</h3>
-					<p className="text-3xl font-bold text-purple-600">0</p>
-					<p className="text-sm text-gray-500">Treasured forever</p>
-				</div>
-			</div>
-
-			{/* Recent Activity */}
-			<div>
-				<h3 className="text-lg font-semibold text-gray-900 mb-4">
-					Recent Moments
-				</h3>
-				<div className="bg-white rounded-lg shadow overflow-hidden">
-					<div className="px-6 py-8 text-center text-gray-500">
-						<div className="text-4xl mb-4">💝</div>
-						<p>No moments shared yet</p>
-						<p className="text-sm mt-2">
-							Start your first pet's story to begin this beautiful journey!
-						</p>
+		<div className="px-4 py-8 sm:px-0">
+			{pets.length === 0 ? (
+				<EmptyState />
+			) : (
+				<div>
+					<div className="flex items-center justify-between mb-6">
+						<h2 className="text-lg font-semibold text-gray-900">Your Pets</h2>
+						<Link
+							href="/pet/onboard"
+							className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-lg transition-colors"
+						>
+							+ Add pet
+						</Link>
+					</div>
+					<div className="flex flex-col gap-3">
+						{pets.map((pet) => (
+							<PetCard key={pet.id} pet={pet} />
+						))}
 					</div>
 				</div>
-			</div>
+			)}
 		</div>
 	);
 }

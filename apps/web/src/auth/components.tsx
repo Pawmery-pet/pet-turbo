@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -43,7 +43,7 @@ export function SignOut() {
 	return (
 		<button
 			type="submit"
-			className="w-full cursor-pointer"
+			className="text-sm text-gray-500 hover:text-gray-900 transition-colors cursor-pointer"
 			onClick={() => {
 				setIsLoading(true);
 				authClient.signOut({

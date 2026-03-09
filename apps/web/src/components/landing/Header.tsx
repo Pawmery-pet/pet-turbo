@@ -10,14 +10,7 @@ interface HeaderProps {
 }
 
 export function Header({ isLoggedIn = false, userEmail }: HeaderProps) {
-	const [scrolled, setScrolled] = useState(false);
 	const [isSigningIn, setIsSigningIn] = useState(false);
-
-	useEffect(() => {
-		const onScroll = () => setScrolled(window.scrollY > 10);
-		window.addEventListener("scroll", onScroll);
-		return () => window.removeEventListener("scroll", onScroll);
-	}, []);
 
 	// Both Sign in and Sign up use the same OAuth2 flow — the provider handles new vs returning users
 	const signIn = async () => {
@@ -36,9 +29,7 @@ export function Header({ isLoggedIn = false, userEmail }: HeaderProps) {
 
 	return (
 		<header
-			className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
-				scrolled ? "bg-[#111111]" : "bg-transparent"
-			}`}
+			className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300"
 		>
 			<div className="max-w-7xl mx-auto px-6 lg:px-8">
 				<div className="flex items-center justify-between h-16">
