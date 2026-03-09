@@ -161,6 +161,13 @@ git commit -m "feat(web): wire up pet onboarding page to mastra agent"
 
 **✅ Stage complete when:** Messages render with proper styling, input works with Enter/button, and the agent conversation flows naturally.
 
+> ⚠️ **API Note:** This project uses `@ai-sdk/react@^3` / `ai@^6`. The `useChat` API is different from older versions:
+> - Transport is configured via `new DefaultChatTransport({ api, body })` imported from `"ai"`
+> - `useChat({ transport })` returns `{ messages, status, sendMessage }` — no `input`/`setInput`/`append`/`stop`
+> - Messages are sent via `sendMessage({ text: "..." })`
+> - Input state is managed locally with `useState`
+> - Read `apps/web/src/app/(protected)/pet/onboard/pet-onboarding-page.tsx` to see the current working pattern
+
 ### Task 2.1: Create `ChatPanel`
 
 **Create:** `apps/web/src/app/(protected)/pet/onboard/chat-panel.tsx`
@@ -169,7 +176,6 @@ git commit -m "feat(web): wire up pet onboarding page to mastra agent"
 "use client";
 
 import type { UIMessage } from "ai";
-import type { UseChatHelpers } from "@ai-sdk/react";
 import {
 	Conversation,
 	ConversationContent,
@@ -191,10 +197,9 @@ import {
 interface ChatPanelProps {
 	messages: UIMessage[];
 	input: string;
-	status: UseChatHelpers["status"];
+	status: string;
 	setInput: (v: string) => void;
-	append: UseChatHelpers["append"];
-	stop: UseChatHelpers["stop"];
+	sendMessage: (msg: { text: string }) => void;
 }
 
 export function ChatPanel({
@@ -202,8 +207,7 @@ export function ChatPanel({
 	input,
 	status,
 	setInput,
-	append,
-	stop,
+	sendMessage,
 }: ChatPanelProps) {
 	const visibleMessages = messages.filter((m) => m.role !== "system");
 
@@ -250,7 +254,7 @@ export function ChatPanel({
 				<PromptInput
 					onSubmit={({ text }) => {
 						if (!text.trim()) return;
-						append({ role: "user", content: text });
+						sendMessage({ text });
 					}}
 				>
 					<PromptInputTextarea
@@ -260,7 +264,7 @@ export function ChatPanel({
 					/>
 					<PromptInputFooter>
 						<div />
-						<PromptInputSubmit onStop={stop} status={status} />
+						<PromptInputSubmit status={status as "idle" | "submitted" | "streaming" | "error"} />
 					</PromptInputFooter>
 				</PromptInput>
 			</div>
@@ -271,12 +275,14 @@ export function ChatPanel({
 
 ### Task 2.2: Update `PetOnboardingPage` to use `ChatPanel` + two-column layout
 
-Replace the bare debug content in `pet-onboarding-page.tsx`:
+Replace `pet-onboarding-page.tsx` (keep the existing transport/useChat pattern):
 
 ```typescript
 "use client";
 
+import { DefaultChatTransport } from "ai";
 import { useChat } from "@ai-sdk/react";
+import { useMemo, useState } from "react";
 import { ChatPanel } from "./chat-panel";
 
 interface PetOnboardingPageProps {
@@ -284,22 +290,28 @@ interface PetOnboardingPageProps {
 }
 
 export function PetOnboardingPage({ userId }: PetOnboardingPageProps) {
-	const { messages, input, status, setInput, append, stop } = useChat({
-		api: "/api/agent/agents/pet-onboarding/stream",
-		body: { resourceId: userId },
-		maxSteps: 10,
-	});
+	const [input, setInput] = useState("");
+
+	const transport = useMemo(
+		() =>
+			new DefaultChatTransport({
+				api: "/api/agent/agents/pet-onboarding/stream",
+				body: { resourceId: userId },
+			}),
+		[userId],
+	);
+
+	const { messages, status, sendMessage } = useChat({ transport });
 
 	return (
 		<div className="flex h-[calc(100vh-10rem)] gap-6">
 			<div className="flex w-1/2 flex-col">
 				<ChatPanel
-					append={append}
 					input={input}
 					messages={messages}
+					sendMessage={sendMessage}
 					setInput={setInput}
 					status={status}
-					stop={stop}
 				/>
 			</div>
 			<div className="w-1/2 rounded-xl border border-dashed border-gray-200 bg-white p-6 text-center text-sm text-gray-400">
