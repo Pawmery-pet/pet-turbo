@@ -1,6 +1,6 @@
-# Pet Onboarding Stage 2 — Chat Panel Implementation Plan
+# Pet Onboarding Stage 2 — Chat Panel Implementation Plan ✅ COMPLETE
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+> Committed: `feat(web): stage 2 — ChatPanel with latest-message-only display and tool visibility`
 
 **Goal:** Replace the full-width chat with a two-column layout where the left panel shows only the latest agent message (wizard-style) and the right column holds a placeholder for Stage 3.
 

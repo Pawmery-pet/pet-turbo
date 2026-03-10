@@ -4,337 +4,39 @@
 
 **Goal:** Build a full-page two-column chat interface at `/pet/onboard` that connects to the `pet-onboarding` Mastra agent, with a live pet preview panel that updates from tool call results.
 
-**Architecture:** `useChat` from `@ai-sdk/react` calls the existing proxy route (`/api/agent/[...path]`), which injects `userId` as a system message before forwarding to border-collie. Tool results (`register-pet`, `save-personality-profile`) arrive as structured `tool-invocation` parts on assistant messages — a pure `derivePetState` function reads them to drive the right panel.
+**Architecture:** `useChat` from `@ai-sdk/react` calls border-collie directly (`http://localhost:3030/chat/pet-onboarding-agent`) with `resourceId: userId` in the body. A hidden trigger message is auto-sent on mount (via `useEffect`) seeding the agent's working memory. Tool results (`register-pet`, `save-personality-profile`) arrive as `ToolUIPart` parts — a pure `derivePetState` function reads them to drive the right panel.
 
-**Tech Stack:** Next.js 15 App Router, `@ai-sdk/react` (useChat), existing `ai-elements` components (`Conversation`, `PromptInput`, `Message`, `MessageResponse`), Tailwind CSS v4, pnpm, Biome (tabs, double quotes)
-
----
-
-## Stage 1 — Wire up the agent connection
-
-**Goal:** `/pet/onboard` exists and sending a message gets a streaming response from the agent.
-
-**✅ Stage complete when:** You can type "hello" in the browser and see the agent stream back a greeting.
-
-### Task 1.1: Modify proxy route to inject userId
-
-**File:** `apps/web/src/app/api/agent/[...path]/route.ts`
-
-The proxy already forwards requests. Extend it to read `resourceId` from the body and prepend a `[SYSTEM]` message so the agent knows who the user is.
-
-Replace the POST handler:
-
-```typescript
-const BORDER_COLLIE_URL = process.env.BORDER_COLLIE_URL ?? "http://localhost:3030";
-
-export async function POST(
-	req: Request,
-	{ params }: { params: Promise<{ path: string[] }> },
-) {
-	const { path } = await params;
-	const upstream = `${BORDER_COLLIE_URL}/api/${path.join("/")}`;
-	const raw = await req.text();
-
-	let finalBody = raw;
-	try {
-		const parsed = JSON.parse(raw);
-		if (parsed.resourceId && Array.isArray(parsed.messages)) {
-			const alreadyInjected = parsed.messages.some(
-				(m: { id?: string }) => m.id === "system-userid",
-			);
-			if (!alreadyInjected) {
-				parsed.messages = [
-					{
-						id: "system-userid",
-						role: "system",
-						content: `[SYSTEM] userId: ${parsed.resourceId}`,
-					},
-					...parsed.messages,
-				];
-				finalBody = JSON.stringify(parsed);
-			}
-		}
-	} catch {
-		// not JSON, forward as-is
-	}
-
-	const res = await fetch(upstream, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: finalBody,
-	});
-
-	return new Response(res.body, {
-		status: res.status,
-		headers: {
-			"Content-Type": res.headers.get("Content-Type") ?? "application/json",
-		},
-	});
-}
-```
-
-GET handler stays unchanged.
-
-### Task 1.2: Create server page + bare client shell
-
-**Create:** `apps/web/src/app/(protected)/pet/onboard/page.tsx`
-
-```typescript
-import { getSession } from "@/lib/auth-server";
-import { PetOnboardingPage } from "./pet-onboarding-page";
-
-export default async function PetOnboardPage() {
-	const session = await getSession();
-	const userId = session!.user.id;
-	return <PetOnboardingPage userId={userId} />;
-}
-```
-
-**Create:** `apps/web/src/app/(protected)/pet/onboard/pet-onboarding-page.tsx`
-
-Bare shell — just wire up `useChat` and dump raw output so we can verify the connection:
-
-```typescript
-"use client";
-
-import { useChat } from "@ai-sdk/react";
-
-interface PetOnboardingPageProps {
-	userId: string;
-}
-
-export function PetOnboardingPage({ userId }: PetOnboardingPageProps) {
-	const { messages, input, status, setInput, append } = useChat({
-		api: "/api/agent/agents/pet-onboarding/stream",
-		body: { resourceId: userId },
-		maxSteps: 10,
-	});
-
-	return (
-		<div className="flex flex-col gap-4 p-4">
-			<div className="text-xs text-gray-400">status: {status}</div>
-			{messages
-				.filter((m) => m.role !== "system")
-				.map((m) => (
-					<div key={m.id}>
-						<strong>{m.role}:</strong>{" "}
-						{m.parts?.map((p, i) =>
-							p.type === "text" ? <span key={i}>{p.text}</span> : null,
-						)}
-					</div>
-				))}
-			<input
-				className="border p-2"
-				onChange={(e) => setInput(e.target.value)}
-				onKeyDown={(e) => {
-					if (e.key === "Enter" && input.trim()) {
-						append({ role: "user", content: input });
-					}
-				}}
-				placeholder="Type a message…"
-				value={input}
-			/>
-		</div>
-	);
-}
-```
-
-### Task 1.3: Smoke test
-
-1. Start border-collie: `cd apps/border-collie && pnpm dev`
-2. Start web: `cd apps/web && pnpm dev`
-3. Navigate to `http://localhost:3000/pet/onboard`
-4. Type "hello" → press Enter
-5. ✅ Agent streams back a greeting
-
-**Commit:**
-```bash
-git add apps/web/src/app/api/agent/ apps/web/src/app/'(protected)'/pet/onboard/
-git commit -m "feat(web): wire up pet onboarding page to mastra agent"
-```
+**Tech Stack:** Next.js 15 App Router, `@ai-sdk/react@^3` + `ai@^6` (`useChat` + `DefaultChatTransport`), existing `ai-elements` components, Tailwind CSS v4, pnpm, Biome (tabs, double quotes)
 
 ---
 
-## Stage 2 — Chat UI (left column)
+## Stage 1 — Wire up the agent connection ✅
 
-**Goal:** Replace the bare debug UI with the proper chat interface using existing `ai-elements` components.
+**Completed:** `feat(web): wire up pet onboarding page to mastra agent`
 
-**✅ Stage complete when:** Messages render with proper styling, input works with Enter/button, and the agent conversation flows naturally.
+**What was built:**
+- `apps/web/src/app/(protected)/pet/onboard/page.tsx` — server component, reads `session.user.uid`, redirects if no session
+- `apps/web/src/app/(protected)/pet/onboard/pet-onboarding-page.tsx` — client component with `useChat` + `DefaultChatTransport` calling `http://localhost:3030/chat/pet-onboarding-agent`
+- Proxy route (`/api/agent/[...path]`) exists but is not used for pet onboarding — border-collie is called directly
 
-> ⚠️ **API Note:** This project uses `@ai-sdk/react@^3` / `ai@^6`. The `useChat` API is different from older versions:
-> - Transport is configured via `new DefaultChatTransport({ api, body })` imported from `"ai"`
-> - `useChat({ transport })` returns `{ messages, status, sendMessage }` — no `input`/`setInput`/`append`/`stop`
-> - Messages are sent via `sendMessage({ text: "..." })`
-> - Input state is managed locally with `useState`
-> - Read `apps/web/src/app/(protected)/pet/onboard/pet-onboarding-page.tsx` to see the current working pattern
+**Key discovery:** Mastra streams its own SSE format; border-collie exposes an AI SDK-compatible endpoint via `@mastra/ai-sdk`'s `chatRoute` at `/chat/pet-onboarding-agent`. Do not proxy raw Mastra streams through `/api/agent`.
 
-### Task 2.1: Create `ChatPanel`
+---
 
-**Create:** `apps/web/src/app/(protected)/pet/onboard/chat-panel.tsx`
+## Stage 2 — Chat UI (left column) ✅
 
-```typescript
-"use client";
+**Completed:** `feat(web): stage 2 — ChatPanel with latest-message-only display and tool visibility`
 
-import type { UIMessage } from "ai";
-import {
-	Conversation,
-	ConversationContent,
-	ConversationEmptyState,
-	ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
-import {
-	Message,
-	MessageContent,
-	MessageResponse,
-} from "@/components/ai-elements/message";
-import {
-	PromptInput,
-	PromptInputFooter,
-	PromptInputSubmit,
-	PromptInputTextarea,
-} from "@/components/ai-elements/prompt-input";
+**What was built:**
+- `apps/web/src/app/(protected)/pet/onboard/chat-panel.tsx` — wizard-style panel showing **only the last assistant message** (`messages.findLast(m => m.role === "assistant")`), plus all tool call parts as collapsible activity badges below
+- `apps/web/src/app/(protected)/pet/onboard/pet-onboarding-page.tsx` — two-column layout; auto-initiates conversation on mount via `useEffect` + `sendMessage` with a working memory seed message
 
-interface ChatPanelProps {
-	messages: UIMessage[];
-	input: string;
-	status: string;
-	setInput: (v: string) => void;
-	sendMessage: (msg: { text: string }) => void;
-}
-
-export function ChatPanel({
-	messages,
-	input,
-	status,
-	setInput,
-	sendMessage,
-}: ChatPanelProps) {
-	const visibleMessages = messages.filter((m) => m.role !== "system");
-
-	return (
-		<div className="flex h-full flex-col rounded-xl border border-gray-100 bg-white shadow-sm">
-			<div className="border-b border-gray-100 px-4 py-3">
-				<h2 className="font-semibold text-gray-900">Pet Registration</h2>
-				<p className="text-sm text-gray-500">Tell me about your pet</p>
-			</div>
-
-			<Conversation className="flex-1">
-				<ConversationContent>
-					{visibleMessages.length === 0 ? (
-						<ConversationEmptyState
-							description="I'll guide you through registering your pet."
-							title="Hey there! 🐾"
-						/>
-					) : (
-						visibleMessages.map((msg) => {
-							if (msg.role !== "user" && msg.role !== "assistant") return null;
-							return (
-								<Message from={msg.role} key={msg.id}>
-									<MessageContent>
-										{msg.parts?.map((part, i) => {
-											if (part.type === "text") {
-												return (
-													<MessageResponse key={i}>
-														{part.text}
-													</MessageResponse>
-												);
-											}
-											return null;
-										})}
-									</MessageContent>
-								</Message>
-							);
-						})
-					)}
-				</ConversationContent>
-				<ConversationScrollButton />
-			</Conversation>
-
-			<div className="border-t border-gray-100 p-3">
-				<PromptInput
-					onSubmit={({ text }) => {
-						if (!text.trim()) return;
-						sendMessage({ text });
-					}}
-				>
-					<PromptInputTextarea
-						onChange={(e) => setInput(e.target.value)}
-						placeholder="Type a message…"
-						value={input}
-					/>
-					<PromptInputFooter>
-						<div />
-						<PromptInputSubmit status={status as "idle" | "submitted" | "streaming" | "error"} />
-					</PromptInputFooter>
-				</PromptInput>
-			</div>
-		</div>
-	);
-}
-```
-
-### Task 2.2: Update `PetOnboardingPage` to use `ChatPanel` + two-column layout
-
-Replace `pet-onboarding-page.tsx` (keep the existing transport/useChat pattern):
-
-```typescript
-"use client";
-
-import { DefaultChatTransport } from "ai";
-import { useChat } from "@ai-sdk/react";
-import { useMemo, useState } from "react";
-import { ChatPanel } from "./chat-panel";
-
-interface PetOnboardingPageProps {
-	userId: string;
-}
-
-export function PetOnboardingPage({ userId }: PetOnboardingPageProps) {
-	const [input, setInput] = useState("");
-
-	const transport = useMemo(
-		() =>
-			new DefaultChatTransport({
-				api: "/api/agent/agents/pet-onboarding/stream",
-				body: { resourceId: userId },
-			}),
-		[userId],
-	);
-
-	const { messages, status, sendMessage } = useChat({ transport });
-
-	return (
-		<div className="flex h-[calc(100vh-10rem)] gap-6">
-			<div className="flex w-1/2 flex-col">
-				<ChatPanel
-					input={input}
-					messages={messages}
-					sendMessage={sendMessage}
-					setInput={setInput}
-					status={status}
-				/>
-			</div>
-			<div className="w-1/2 rounded-xl border border-dashed border-gray-200 bg-white p-6 text-center text-sm text-gray-400">
-				Preview panel coming soon
-			</div>
-		</div>
-	);
-}
-```
-
-### Task 2.3: Verify chat experience
-
-1. Navigate to `http://localhost:3000/pet/onboard`
-2. ✅ Empty state shows "Hey there! 🐾"
-3. Send a message — ✅ user message appears right-aligned, assistant streams left-aligned
-4. ✅ Submit button shows spinner while streaming, stop square during stream
-5. ✅ Right column shows placeholder dashed box
-
-**Commit:**
-```bash
-git add apps/web/src/app/'(protected)'/pet/onboard/
-git commit -m "feat(web): add chat panel with ai-elements components"
-```
+**Key decisions vs original plan:**
+- Shows only the **latest** agent message (not full history) — wizard interview feel
+- Tool calls surface in the chat panel as `Tool`/`ToolHeader` collapsibles (state badges: Running → Completed)
+- `useEffect` with `useRef` guard auto-triggers on mount — no user input needed to start
+- Working memory seed message includes `userId` and a registration template so the agent has context from the first turn
+- Agent (`pet-onboarding-agent`) has Mastra `Memory` with `workingMemory.enabled: true` and a registration form template
 
 ---
 
@@ -343,6 +45,12 @@ git commit -m "feat(web): add chat panel with ai-elements components"
 **Goal:** Right panel updates in real-time as the agent collects pet info and calls tools.
 
 **✅ Stage complete when:** After providing name/type/breed, the right panel shows the pet card. After completing the personality interview, trait bars fill in and narrative appears.
+
+> ⚠️ **AI SDK v6 tool part format:** Tool parts are `ToolUIPart` from `"ai"` — NOT the old `tool-invocation` format. Key differences:
+> - `part.type` is `"tool-register-pet"` or `"tool-save-personality-profile"` (prefixed with `"tool-"`)
+> - `part.state` is `"output-available"` when done (not `toolInvocation.state === "result"`)
+> - `part.output` holds the result (not `toolInvocation.result`)
+> - `part.input` holds the call arguments
 
 ### Task 3.1: Create `derivePetState` utility + tests
 
@@ -367,21 +75,17 @@ import { describe, expect, it } from "vitest";
 import { derivePetState } from "./derive-pet-state";
 import type { UIMessage } from "ai";
 
-const makeToolResultMsg = (toolName: string, result: unknown): UIMessage => ({
+const makeToolMsg = (toolType: string, output: unknown, state = "output-available"): UIMessage => ({
 	id: "msg-1",
 	role: "assistant",
 	content: "",
 	parts: [
 		{
-			type: "tool-invocation",
-			toolInvocation: {
-				toolCallId: "call-1",
-				toolName,
-				state: "result",
-				args: {},
-				result,
-			},
-		},
+			type: toolType,
+			state,
+			input: {},
+			output,
+		} as never,
 	],
 });
 
@@ -394,7 +98,7 @@ describe("derivePetState", () => {
 
 	it("extracts pet identity from register-pet result", () => {
 		const state = derivePetState([
-			makeToolResultMsg("register-pet", { id: "pet-1", name: "Max", type: "dog", breed: "Golden Retriever" }),
+			makeToolMsg("tool-register-pet", { id: "pet-1", name: "Max", type: "dog", breed: "Golden Retriever" }),
 		]);
 		expect(state).toMatchObject({ petId: "pet-1", name: "Max", type: "dog", breed: "Golden Retriever" });
 		expect(state.traits).toBeNull();
@@ -402,8 +106,8 @@ describe("derivePetState", () => {
 
 	it("extracts traits and narrative from save-personality-profile result", () => {
 		const state = derivePetState([
-			makeToolResultMsg("register-pet", { id: "pet-1", name: "Max", type: "dog", breed: "Golden" }),
-			makeToolResultMsg("save-personality-profile", {
+			makeToolMsg("tool-register-pet", { id: "pet-1", name: "Max", type: "dog", breed: "Golden" }),
+			makeToolMsg("tool-save-personality-profile", {
 				traits: { energy: 4, playfulness: 5 },
 				narrative: "Max is energetic.",
 			}),
@@ -413,12 +117,9 @@ describe("derivePetState", () => {
 	});
 
 	it("ignores tool calls not yet resolved", () => {
-		const state = derivePetState([{
-			id: "msg-1",
-			role: "assistant",
-			content: "",
-			parts: [{ type: "tool-invocation", toolInvocation: { toolCallId: "c1", toolName: "register-pet", state: "call", args: {} } }],
-		}]);
+		const state = derivePetState([
+			makeToolMsg("tool-register-pet", null, "input-available"),
+		]);
 		expect(state.petId).toBeNull();
 	});
 });
@@ -435,7 +136,7 @@ cd apps/web && pnpm test
 **Create:** `apps/web/src/app/(protected)/pet/onboard/derive-pet-state.ts`
 
 ```typescript
-import type { UIMessage } from "ai";
+import type { ToolUIPart, UIMessage } from "ai";
 
 export interface PetOnboardingState {
 	petId: string | null;
@@ -452,22 +153,21 @@ export function derivePetState(messages: UIMessage[]): PetOnboardingState {
 	};
 
 	for (const msg of messages) {
-		if (msg.role !== "assistant") continue;
 		for (const part of msg.parts ?? []) {
-			if (part.type !== "tool-invocation") continue;
-			const { toolInvocation } = part;
-			if (toolInvocation.state !== "result") continue;
+			if (!part.type?.startsWith("tool-")) continue;
+			const tool = part as ToolUIPart;
+			if (tool.state !== "output-available") continue;
 
-			if (toolInvocation.toolName === "register-pet") {
-				const r = toolInvocation.result as { id: string; name: string; type: string; breed: string };
+			if (tool.type === "tool-register-pet") {
+				const r = tool.output as { id: string; name: string; type: string; breed: string };
 				state.petId = r.id;
 				state.name = r.name;
 				state.type = r.type;
 				state.breed = r.breed;
 			}
 
-			if (toolInvocation.toolName === "save-personality-profile") {
-				const r = toolInvocation.result as { traits: Record<string, number>; narrative: string };
+			if (tool.type === "tool-save-personality-profile") {
+				const r = tool.output as { traits: Record<string, number>; narrative: string };
 				state.traits = r.traits;
 				state.narrative = r.narrative;
 			}
@@ -602,15 +302,15 @@ import { PetPreviewPanel } from "./pet-preview-panel";
 
 // replace the placeholder div with:
 <div className="w-1/2">
-  <PetPreviewPanel messages={messages} />
+	<PetPreviewPanel messages={messages} />
 </div>
 ```
 
 ### Task 3.4: End-to-end verification
 
 1. Navigate to `http://localhost:3000/pet/onboard`
-2. ✅ Right panel: paw emoji + dotted placeholders
-3. Complete Phase 1 (name, type, breed) — ✅ right panel fills in pet identity card
+2. ✅ Right panel: paw emoji + dotted placeholders, "Pet details will appear here as we chat."
+3. Complete Phase 1 (name, type, breed) — ✅ right panel fills in pet identity card and emoji updates
 4. Complete personality interview + confirm — ✅ trait bars animate in
 5. ✅ Narrative appears below bars
 
@@ -643,11 +343,11 @@ git commit -m "fix(web): resolve typecheck errors in pet onboarding page"
 
 ## Troubleshooting
 
-**Tool invocations missing from messages:**
-The Mastra stream must send tool call events in AI SDK data stream format. Inspect the raw stream in DevTools Network tab (the `/api/agent/agents/pet-onboarding/stream` request). You should see lines like `9:{"toolCallId":...}`. If not, check `@mastra/ai-sdk` docs — the Mastra server may need a specific config to emit AI SDK-compatible streams.
+**Tool output missing from `derivePetState`:**
+Log `messages` in the browser console and check that tool parts have `state: "output-available"` and a non-null `output`. If `state` is `"input-available"` the tool is still running. If `output` is null, check the border-collie tool execution for errors.
 
-**`calc(100vh-10rem)` height is off:**
-Nav is `h-16` = 4rem, layout `py-6` = 3rem total. Try `calc(100vh - 8rem)` or `calc(100vh - 7rem)` and adjust until the panel fills nicely without scrolling the page.
+**`calc(100vh-8rem)` height is off:**
+Nav is `h-16` = 4rem, page padding `p-6` = 1.5rem top + 1.5rem bottom = 3rem. Adjust `calc(100vh-8rem)` by `±1rem` increments until the panel fills nicely without page scroll.
 
-**Agent not receiving userId:**
-Add `console.log` in the proxy POST handler to verify `finalBody` includes the system message before forwarding.
+**Agent not calling tools / wrong userId in tool calls:**
+Check the Mastra working memory — the seed message sent on mount should contain the userId in the template. Confirm the border-collie `pet-onboarding-agent` has `memory.options.workingMemory.enabled: true`. The agent reads userId from working memory, not from the message content.
