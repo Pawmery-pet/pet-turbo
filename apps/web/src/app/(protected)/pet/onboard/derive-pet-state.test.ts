@@ -5,7 +5,6 @@ import type { UIMessage } from "ai";
 const makeToolMsg = (toolType: string, output: unknown, state = "output-available"): UIMessage => ({
 	id: "msg-1",
 	role: "assistant",
-	content: "",
 	parts: [
 		{
 			type: toolType,
@@ -25,7 +24,7 @@ describe("derivePetState", () => {
 
 	it("extracts pet identity from register-pet result", () => {
 		const state = derivePetState([
-			makeToolMsg("tool-register-pet", { id: "pet-1", name: "Max", type: "dog", breed: "Golden Retriever" }),
+			makeToolMsg("tool-registerPetTool", { id: "pet-1", name: "Max", type: "dog", breed: "Golden Retriever" }),
 		]);
 		expect(state).toMatchObject({ petId: "pet-1", name: "Max", type: "dog", breed: "Golden Retriever" });
 		expect(state.traits).toBeNull();
@@ -33,8 +32,8 @@ describe("derivePetState", () => {
 
 	it("extracts traits and narrative from save-personality-profile result", () => {
 		const state = derivePetState([
-			makeToolMsg("tool-register-pet", { id: "pet-1", name: "Max", type: "dog", breed: "Golden" }),
-			makeToolMsg("tool-save-personality-profile", {
+			makeToolMsg("tool-registerPetTool", { id: "pet-1", name: "Max", type: "dog", breed: "Golden" }),
+			makeToolMsg("tool-savePersonalityProfileTool", {
 				traits: { energy: 4, playfulness: 5 },
 				narrative: "Max is energetic.",
 			}),
@@ -45,7 +44,7 @@ describe("derivePetState", () => {
 
 	it("ignores tool calls not yet resolved", () => {
 		const state = derivePetState([
-			makeToolMsg("tool-register-pet", null, "input-available"),
+			makeToolMsg("tool-registerPetTool", null, "input-available"),
 		]);
 		expect(state.petId).toBeNull();
 	});

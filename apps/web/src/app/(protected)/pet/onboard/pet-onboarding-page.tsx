@@ -4,6 +4,7 @@ import { DefaultChatTransport } from "ai";
 import { useChat } from "@ai-sdk/react";
 import { useMemo, useEffect, useRef } from "react";
 import { ChatPanel } from "./chat-panel";
+import { PetPreviewPanel } from "./pet-preview-panel";
 
 interface PetOnboardingPageProps {
   userId: string;
@@ -40,8 +41,8 @@ export function PetOnboardingPage({ userId }: PetOnboardingPageProps) {
           status={status}
         />
       </div>
-      <div className="w-1/2 rounded-xl border border-dashed border-gray-200 bg-white p-6 text-center text-sm text-gray-400">
-        Preview panel coming soon
+      <div className="w-1/2">
+        <PetPreviewPanel messages={messages} />
       </div>
     </div>
   );
