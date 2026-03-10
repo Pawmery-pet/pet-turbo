@@ -5,13 +5,13 @@ import { savePersonalityProfileTool } from "../tools/save-profile-tool";
 import { TRAIT_VOCABULARY } from "../traits";
 
 const traitVocabularyContext = Object.entries(TRAIT_VOCABULARY)
-	.map(([type, traits]) => `  ${type}: [${traits.join(", ")}]`)
-	.join("\n");
+  .map(([type, traits]) => `  ${type}: [${traits.join(", ")}]`)
+  .join("\n");
 
 export const petOnboardingAgent = new Agent({
-	id: "pet-onboarding",
-	name: "Pet Onboarding Agent",
-	instructions: `
+  id: "pet-onboarding-agent",
+  name: "Pet Onboarding Agent",
+  instructions: `
 You are a warm, friendly pet registration assistant for Pawmery. Your job is to register the owner's pet and conduct a short personality interview — all in one natural conversation.
 
 The owner's userId will appear at the start of the conversation as [SYSTEM] context. Extract it and use it in all tool calls.
@@ -62,7 +62,7 @@ End with: "Done! [name]'s profile is ready. Head back to your dashboard to meet 
 - Keep tone warm and playful
 - Do not surface internal steps or tool names to the user
 `,
-	model: "deepseek/deepseek-chat",
-	tools: { registerPetTool, savePersonalityProfileTool },
-	memory: new Memory(),
+  model: "deepseek/deepseek-chat",
+  tools: { registerPetTool, savePersonalityProfileTool },
+  memory: new Memory(),
 });
