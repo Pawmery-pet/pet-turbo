@@ -1,109 +1,47 @@
 "use client";
 
-import { DefaultChatTransport, ToolUIPart } from "ai";
+import { DefaultChatTransport } from "ai";
 import { useChat } from "@ai-sdk/react";
-import { useState } from "react";
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-} from "@/components/ai-elements/message";
-import {
-  PromptInput,
-  PromptInputBody,
-  PromptInputTextarea,
-} from "@/components/ai-elements/prompt-input";
-import {
-  Tool,
-  ToolHeader,
-  ToolContent,
-  ToolInput,
-  ToolOutput,
-} from "@/components/ai-elements/tool";
+import { useMemo, useEffect, useRef } from "react";
+import { ChatPanel } from "./chat-panel";
 
 interface PetOnboardingPageProps {
   userId: string;
 }
 
 export function PetOnboardingPage({ userId }: PetOnboardingPageProps) {
-  const [input, setInput] = useState("");
+  const initiated = useRef(false);
 
-  const { messages, status, sendMessage } = useChat({
-    transport: new DefaultChatTransport({
-      api: "http://localhost:3030/chat/pet-onboarding-agent",
-      body: { resourceId: userId },
-    }),
-  });
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: "http://localhost:3030/chat/pet-onboarding-agent",
+        body: { resourceId: userId },
+      }),
+    [userId],
+  );
+
+  const { messages, status, sendMessage } = useChat({ transport });
+
+  useEffect(() => {
+    if (initiated.current) return;
+    initiated.current = true;
+    sendMessage({
+      text: `My user id is ${userId}, Start the conversation please`,
+    });
+  }, [sendMessage]);
 
   return (
-    <div className="relative size-full h-screen w-full p-6">
-      <div className="flex h-full flex-col">
-        <Conversation className="h-full">
-          <ConversationContent>
-            {messages.map((message) => (
-              <div key={message.id}>
-                {message.parts?.map((part, i) => {
-                  if (part.type === "text") {
-                    return (
-                      <Message key={`${message.id}-${i}`} from={message.role}>
-                        <MessageContent>
-                          <MessageResponse>{part.text}</MessageResponse>
-                        </MessageContent>
-                      </Message>
-                    );
-                  }
-
-                  if (part.type?.startsWith("tool-")) {
-                    return (
-                      <Tool key={`${message.id}-${i}`}>
-                        <ToolHeader
-                          type={(part as ToolUIPart).type}
-                          state={
-                            (part as ToolUIPart).state || "output-available"
-                          }
-                          className="cursor-pointer"
-                        />
-                        <ToolContent>
-                          <ToolInput input={(part as ToolUIPart).input || {}} />
-                          <ToolOutput
-                            output={(part as ToolUIPart).output}
-                            errorText={(part as ToolUIPart).errorText}
-                          />
-                        </ToolContent>
-                      </Tool>
-                    );
-                  }
-
-                  return null;
-                })}
-              </div>
-            ))}
-            <ConversationScrollButton />
-          </ConversationContent>
-        </Conversation>
-
-        <PromptInput
-          onSubmit={(message) => {
-            sendMessage({ text: message.text });
-            setInput("");
-          }}
-          className="mt-20"
-        >
-          <PromptInputBody>
-            <PromptInputTextarea
-              onChange={(e) => setInput(e.target.value)}
-              className="md:leading-10"
-              value={input}
-              placeholder="Type your message..."
-              disabled={status !== "ready"}
-            />
-          </PromptInputBody>
-        </PromptInput>
+    <div className="flex h-[calc(100vh-8rem)] gap-6 p-6">
+      <div className="flex w-1/2 flex-col">
+        <ChatPanel
+          messages={messages}
+          sendMessage={sendMessage}
+          status={status}
+        />
+      </div>
+      <div className="w-1/2 rounded-xl border border-dashed border-gray-200 bg-white p-6 text-center text-sm text-gray-400">
+        Preview panel coming soon
       </div>
     </div>
   );
