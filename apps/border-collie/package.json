@@ -17,6 +17,7 @@
     "node": ">=22.13.0"
   },
   "dependencies": {
+    "@mastra/ai-sdk": "^1.1.2",
     "@mastra/core": "^1.10.0",
     "@mastra/evals": "^1.1.2",
     "@mastra/libsql": "^1.6.4",
