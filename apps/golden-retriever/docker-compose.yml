@@ -1,12 +1,12 @@
 version: "3.8"
 
 services:
-  golden-retriver:
+  golden-retriever:
     build:
       context: ../..
-      dockerfile: apps/golden-retriver/Dockerfile
-    image: golden-retriver:latest
-    container_name: golden-retriver
+      dockerfile: apps/golden-retriever/Dockerfile
+    image: golden-retriever:latest
+    container_name: golden-retriever
     ports:
       - "3010:3010"
     env_file:
@@ -19,8 +19,8 @@ services:
       retries: 3
       start_period: 10s
     networks:
-      - golden-retriver-network
+      - golden-retriever-network
 
 networks:
-  golden-retriver-network:
+  golden-retriever-network:
     driver: bridge

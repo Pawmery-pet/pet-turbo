@@ -26,13 +26,13 @@ pnpm test         # Run tests
 
 ```bash
 # Build the image (from repository root)
-docker build -f apps/golden-retriver/Dockerfile -t golden-retriver:latest .
+docker build -f apps/golden-retriever/Dockerfile -t golden-retriever:latest .
 
 # Run the container
-docker run -d -p 3010:3010 --env-file apps/golden-retriver/.env --name golden-retriver golden-retriver:latest
+docker run -d -p 3010:3010 --env-file apps/golden-retriever/.env --name golden-retriever golden-retriever:latest
 
 # Or use docker-compose
-cd apps/golden-retriver
+cd apps/golden-retriever
 docker-compose up -d
 ```
 

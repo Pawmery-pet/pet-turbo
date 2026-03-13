@@ -13,7 +13,7 @@ done
 
 # Format: "infisical/path:local/.env"
 APPS=(
-	"golden-retriever:apps/golden-retriver/.env"
+	"golden-retriever:apps/golden-retriever/.env"
 	"border-collie:apps/border-collie/.env"
 	"web:apps/web/.env"
 )

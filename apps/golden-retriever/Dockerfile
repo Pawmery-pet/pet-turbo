@@ -1,5 +1,5 @@
 FROM node:22-alpine AS base
-ARG APP_NAME=golden-retriver
+ARG APP_NAME=golden-retriever
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
