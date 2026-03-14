@@ -20,13 +20,16 @@ export function derivePetState(messages: UIMessage[]): PetOnboardingState {
 			!!part.type?.startsWith("tool-") && (part as ToolUIPart).state === "output-available",
 		)
 		.reduce((state, tool) => {
-			if (tool.type === "tool-registerPetTool") {
-				const r = tool.output as { id: string; name: string; type: string; breed: string };
-				return { ...state, petId: r.id, name: r.name, type: r.type, breed: r.breed };
-			}
-			if (tool.type === "tool-savePersonalityProfileTool") {
-				const r = tool.output as { traits: Record<string, number>; narrative: string };
-				return { ...state, traits: r.traits, narrative: r.narrative };
+			if (tool.type === "tool-createPetTool") {
+				const r = tool.output as {
+					id: string;
+					name: string;
+					type: string;
+					breed: string;
+					traits: Record<string, number>;
+					narrative: string;
+				};
+				return { ...state, petId: r.id, name: r.name, type: r.type, breed: r.breed, traits: r.traits, narrative: r.narrative };
 			}
 			return state;
 		}, emptyState);

@@ -18,9 +18,6 @@ function PetCard({ pet }: { pet: Pet }) {
         <p className="font-semibold text-gray-900 truncate">{pet.name}</p>
         <p className="text-sm text-gray-500 capitalize">{pet.breed}</p>
       </div>
-      <span className="text-xs text-gray-400 capitalize bg-gray-50 px-2 py-1 rounded-full">
-        {pet.status.replace("_", " ")}
-      </span>
     </div>
   );
 }
