@@ -16,8 +16,8 @@ export default async function ProtectedLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-100">
+    <div className="flex h-screen flex-col bg-gray-50">
+      <header className="shrink-0 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/dashboard" className="flex items-center gap-2">
@@ -35,7 +35,7 @@ export default async function ProtectedLayout({
           </div>
         </div>
       </header>
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">{children}</main>
+      <main className="max-w-7xl mx-auto flex-1 overflow-hidden w-full">{children}</main>
     </div>
   );
 }
