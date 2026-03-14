@@ -40,7 +40,7 @@ export function PetOnboardingPage({ userId }: PetOnboardingPageProps) {
 	}
 
 	return (
-		<div className="flex h-[calc(100vh-4rem)] flex-col">
+		<div className="flex h-full flex-col">
 			<TypeformPanel
 				messages={messages}
 				sendMessage={sendMessage}

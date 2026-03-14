@@ -1,7 +1,7 @@
 "use client";
 
 import type { ChatStatus, UIMessage } from "ai";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import {
 	PromptInput,
 	PromptInputBody,
@@ -22,6 +22,8 @@ export function TypeformPanel({
 	status,
 	sendMessage,
 }: TypeformPanelProps) {
+	const lastProgressRef = useRef(0);
+
 	const lastAssistantMessage = messages.findLast((m) => m.role === "assistant");
 
 	const lastTextPart = lastAssistantMessage?.parts
@@ -33,7 +35,11 @@ export function TypeformPanel({
 			? parseAgentResponse(lastTextPart.text)
 			: null;
 
-	const progress = parsed?.progress ?? 0;
+	if (parsed?.progress !== undefined) {
+		lastProgressRef.current = parsed.progress;
+	}
+
+	const progress = lastProgressRef.current;
 	const questionText = parsed?.message ?? null;
 
 	const isDisabled = status === "submitted" || status === "streaming";
