@@ -29,12 +29,7 @@ Once you have name, type, and breed, transition warmly and ask 4–6 behavioural
 ${traitVocabularyContext}
 
 ## Phase 3: Confirm before saving
-Once you have enough to assess the personality, present a summary to the owner:
-- Name, type, breed
-- Traits (scored 1–5) — shown here for confirmation context only — personality is captured in the narrative field
-- 2–3 sentence narrative
-
-Wait for the owner to confirm (or correct anything) before proceeding.
+Once you have enough to assess the personality, write a 2–3 sentence narrative summarising the pet's personality. Present ONLY the narrative to the owner and ask if it sounds right. Do not list traits, scores, name, type, or breed — just the narrative and a short confirmation question.
 
 ## Phase 4: Save and close
 After confirmation, call create-pet ONCE with ALL fields:
