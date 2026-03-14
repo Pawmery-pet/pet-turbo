@@ -18,33 +18,32 @@ const makeToolMsg = (toolType: string, output: unknown, state = "output-availabl
 describe("derivePetState", () => {
 	it("returns null state for no messages", () => {
 		expect(derivePetState([])).toEqual({
-			petId: null, name: null, type: null, breed: null, traits: null, narrative: null,
+			petId: null, name: null, type: null, breed: null, narrative: null,
 		});
 	});
 
-	it("extracts pet identity from register-pet result", () => {
+	it("extracts all pet fields from create-pet result", () => {
 		const state = derivePetState([
-			makeToolMsg("tool-registerPetTool", { id: "pet-1", name: "Max", type: "dog", breed: "Golden Retriever" }),
-		]);
-		expect(state).toMatchObject({ petId: "pet-1", name: "Max", type: "dog", breed: "Golden Retriever" });
-		expect(state.traits).toBeNull();
-	});
-
-	it("extracts traits and narrative from save-personality-profile result", () => {
-		const state = derivePetState([
-			makeToolMsg("tool-registerPetTool", { id: "pet-1", name: "Max", type: "dog", breed: "Golden" }),
-			makeToolMsg("tool-savePersonalityProfileTool", {
-				traits: { energy: 4, playfulness: 5 },
+			makeToolMsg("tool-createPetTool", {
+				id: "pet-1",
+				name: "Max",
+				type: "dog",
+				breed: "Golden Retriever",
 				narrative: "Max is energetic.",
 			}),
 		]);
-		expect(state.traits).toEqual({ energy: 4, playfulness: 5 });
-		expect(state.narrative).toBe("Max is energetic.");
+		expect(state).toEqual({
+			petId: "pet-1",
+			name: "Max",
+			type: "dog",
+			breed: "Golden Retriever",
+			narrative: "Max is energetic.",
+		});
 	});
 
 	it("ignores tool calls not yet resolved", () => {
 		const state = derivePetState([
-			makeToolMsg("tool-registerPetTool", null, "input-available"),
+			makeToolMsg("tool-createPetTool", null, "input-available"),
 		]);
 		expect(state.petId).toBeNull();
 	});

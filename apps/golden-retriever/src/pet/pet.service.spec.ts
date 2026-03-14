@@ -10,7 +10,8 @@ const mockPet = {
 	name: "Buddy",
 	type: "dog" as const,
 	breed: "Golden Retriever",
-	status: "registered" as const,
+
+	narrative: "Buddy is an energetic dog.",
 	createdAt: new Date(),
 	updatedAt: new Date(),
 };
@@ -46,6 +47,8 @@ describe("PetService", () => {
 				name: "Buddy",
 				type: "dog",
 				breed: "Golden Retriever",
+			
+				narrative: "Buddy is an energetic dog.",
 			});
 			expect(result).toEqual(mockPet);
 			expect(mockRepo.create).toHaveBeenCalledTimes(1);

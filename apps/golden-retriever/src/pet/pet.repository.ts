@@ -21,6 +21,7 @@ export class PetRepository {
 				name: dto.name,
 				type: dto.type,
 				breed: dto.breed,
+				narrative: dto.narrative,
 			})
 			.returning();
 		return created;

@@ -1,9 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
 import { PetService } from "./pet.service";
-import { PetProfileService } from "./pet-profile.service";
 import {
 	CreatePetDto,
-	CreatePetProfileDto,
 	DeletePetDto,
 	GetPetDto,
 	ListPetsDto,
@@ -14,7 +12,6 @@ import {
 export class PetController {
 	constructor(
 		private readonly service: PetService,
-		private readonly profileService: PetProfileService,
 	) {}
 
 	@Post()
@@ -25,21 +22,6 @@ export class PetController {
 	@Post("list")
 	list(@Body() dto: ListPetsDto) {
 		return this.service.list(dto.userId);
-	}
-
-	@Post(":id/profile")
-	createProfile(@Param("id") id: string, @Body() dto: CreatePetProfileDto) {
-		return this.profileService.create(id, dto.userId, dto);
-	}
-
-	@Get(":id/profile")
-	getProfile(@Param("id") id: string) {
-		return this.profileService.getLatest(id);
-	}
-
-	@Get(":id/profile/history")
-	getProfileHistory(@Param("id") id: string) {
-		return this.profileService.getHistory(id);
 	}
 
 	@Post(":id")
