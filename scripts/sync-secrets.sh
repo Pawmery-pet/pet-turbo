@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Infisical Project Id
-PROJECT_ID=" 32b9ffbc-b336-4a82-a728-5d38a4e9e5ef"
+PROJECT_ID="9ebfbf73-380c-4e5d-ae8a-69b60578331d"
 ENV="dev"
 
 while [[ $# -gt 0 ]]; do
