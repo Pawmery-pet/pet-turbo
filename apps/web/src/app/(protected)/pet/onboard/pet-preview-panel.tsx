@@ -28,7 +28,7 @@ export function PetPreviewPanel({ state }: { state: PetOnboardingState }) {
   const router = useRouter();
 
   return (
-    <div className="flex h-full flex-col gap-4 p-6">
+    <div className="flex h-full flex-col gap-4 p-6 animate-in fade-in slide-in-from-bottom-6 duration-500">
       <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
         <h2 className="mb-4 font-semibold text-gray-900">Your Pet</h2>
         <div className="flex items-center gap-4">

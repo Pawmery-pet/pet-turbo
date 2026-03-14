@@ -1,7 +1,7 @@
 "use client";
 
 import type { ChatStatus, UIMessage } from "ai";
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import {
 	PromptInput,
 	PromptInputBody,
@@ -44,6 +44,18 @@ export function TypeformPanel({
 
 	const isDisabled = status === "submitted" || status === "streaming";
 
+	const lastSettledRef = useRef<string | null>(null);
+	if (!isDisabled && questionText) lastSettledRef.current = questionText;
+	const displayText = questionText ?? lastSettledRef.current;
+
+	const prevDisabledRef = useRef(false);
+	useEffect(() => {
+		if (prevDisabledRef.current && !isDisabled) {
+			document.querySelector<HTMLTextAreaElement>("textarea")?.focus();
+		}
+		prevDisabledRef.current = isDisabled;
+	}, [isDisabled]);
+
 	const handleSubmit = useCallback(
 		({ text }: { text: string }) => {
 			if (!text.trim()) return;
@@ -63,14 +75,29 @@ export function TypeformPanel({
 			</div>
 
 			{/* Scrollable message area */}
-			<div className="flex flex-1 items-center justify-center overflow-y-auto px-8 py-12">
-				<p className="max-w-xl text-center text-2xl font-medium leading-relaxed text-gray-900">
-					{questionText ?? (
-						<span className="text-gray-400">
-							Starting your pet registration…
-						</span>
+			<div className="relative flex flex-1 items-center justify-center overflow-y-auto px-8 py-12">
+				{/* Question — fades out when loading, slides in when new content arrives */}
+				<p
+					key={isDisabled ? (lastSettledRef.current ?? "") : (questionText ?? "")}
+					className={`max-w-xl text-center text-2xl font-medium leading-relaxed text-gray-900 ${
+						isDisabled
+							? "animate-out fade-out slide-out-to-bottom-4 duration-200 fill-mode-forwards"
+							: "animate-in fade-in slide-in-from-bottom-4 duration-300"
+					}`}
+				>
+					{displayText ?? (
+						<span className="text-gray-400">Starting your pet registration…</span>
 					)}
 				</p>
+
+				{/* Typing dots — fade in while agent is thinking */}
+				{isDisabled && (
+					<div className="absolute inset-0 flex items-center justify-center gap-2 animate-in fade-in duration-200">
+						<span className="size-2 rounded-full bg-gray-400 animate-bounce [animation-delay:0ms]" />
+						<span className="size-2 rounded-full bg-gray-400 animate-bounce [animation-delay:150ms]" />
+						<span className="size-2 rounded-full bg-gray-400 animate-bounce [animation-delay:300ms]" />
+					</div>
+				)}
 			</div>
 
 			{/* Pinned input */}
