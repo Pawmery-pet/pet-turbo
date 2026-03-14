@@ -26,4 +26,24 @@ describe("parseAgentResponse", () => {
 		const result = parseAgentResponse("");
 		expect(result).toBeNull();
 	});
+
+	it("returns null for progress out of range", () => {
+		const result = parseAgentResponse('{"message":"hello","progress":-1}');
+		expect(result).toBeNull();
+	});
+
+	it("returns null for progress above 100", () => {
+		const result = parseAgentResponse('{"message":"hello","progress":101}');
+		expect(result).toBeNull();
+	});
+
+	it("returns null for progress NaN", () => {
+		const result = parseAgentResponse('{"message":"hello","progress":null}');
+		expect(result).toBeNull();
+	});
+
+	it('returns null for JSON string "null"', () => {
+		const result = parseAgentResponse("null");
+		expect(result).toBeNull();
+	});
 });

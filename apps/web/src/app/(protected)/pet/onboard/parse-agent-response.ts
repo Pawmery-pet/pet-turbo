@@ -12,7 +12,7 @@ export function parseAgentResponse(text: string): AgentResponse | null {
 			typeof parsed === "object" &&
 			parsed !== null &&
 			typeof parsed.message === "string" &&
-			typeof parsed.progress === "number"
+			Number.isFinite(parsed.progress) && parsed.progress >= 0 && parsed.progress <= 100
 		) {
 			return { message: parsed.message, progress: parsed.progress };
 		}
