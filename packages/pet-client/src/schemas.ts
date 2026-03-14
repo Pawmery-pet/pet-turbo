@@ -7,7 +7,6 @@ export const CreatePetSchema = z.object({
 	name: z.string().min(1),
 	type: PetTypeSchema,
 	breed: z.string().min(1),
-	traits: z.record(z.string(), z.number()),
 	narrative: z.string().min(1),
 });
 
@@ -35,7 +34,6 @@ export const PetSchema = z.object({
 	name: z.string(),
 	type: PetTypeSchema,
 	breed: z.string(),
-	traits: z.record(z.string(), z.number()),
 	narrative: z.string(),
 	createdAt: z.coerce.date(),
 	updatedAt: z.coerce.date(),

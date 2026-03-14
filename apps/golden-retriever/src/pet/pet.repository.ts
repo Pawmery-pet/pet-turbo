@@ -21,7 +21,6 @@ export class PetRepository {
 				name: dto.name,
 				type: dto.type,
 				breed: dto.breed,
-				traits: dto.traits,
 				narrative: dto.narrative,
 			})
 			.returning();

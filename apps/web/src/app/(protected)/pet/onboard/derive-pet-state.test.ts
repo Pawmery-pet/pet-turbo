@@ -18,7 +18,7 @@ const makeToolMsg = (toolType: string, output: unknown, state = "output-availabl
 describe("derivePetState", () => {
 	it("returns null state for no messages", () => {
 		expect(derivePetState([])).toEqual({
-			petId: null, name: null, type: null, breed: null, traits: null, narrative: null,
+			petId: null, name: null, type: null, breed: null, narrative: null,
 		});
 	});
 
@@ -29,7 +29,6 @@ describe("derivePetState", () => {
 				name: "Max",
 				type: "dog",
 				breed: "Golden Retriever",
-				traits: { energy: 4, playfulness: 5 },
 				narrative: "Max is energetic.",
 			}),
 		]);
@@ -38,7 +37,6 @@ describe("derivePetState", () => {
 			name: "Max",
 			type: "dog",
 			breed: "Golden Retriever",
-			traits: { energy: 4, playfulness: 5 },
 			narrative: "Max is energetic.",
 		});
 	});

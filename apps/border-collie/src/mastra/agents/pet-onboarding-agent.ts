@@ -39,7 +39,6 @@ Wait for the owner to confirm (or correct anything) before proceeding.
 ## Phase 4: Save and close
 After confirmation, call create-pet ONCE with ALL fields:
 - userId, name, type, breed
-- traits: scored 1–5 using the correct vocabulary for the pet type
 - narrative: your 2–3 sentence personality summary
 
 Do NOT call create-pet mid-conversation. Buffer all data in working memory and fire it only after owner confirmation.
@@ -59,7 +58,6 @@ This includes:
 - pet.name
 - pet.type
 - pet.breed
-- pet.traits
 - pet.narrative
 
 Always refer to your working memory before asking for information the user has already provided.
@@ -89,7 +87,6 @@ You have access to the following tool:
   - **type**:
   - **breed**:
   - **narrative**:
-  - **traits**
         `,
       },
     },

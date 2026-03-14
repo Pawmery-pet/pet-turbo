@@ -1,4 +1,4 @@
-import { pgEnum, pgTable, text, timestamp, index, jsonb } from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text, timestamp, index } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 
 export const petTypeEnum = pgEnum("pet_type", ["dog", "cat", "bird", "rabbit", "sheep"]);
@@ -13,7 +13,6 @@ export const pet = pgTable(
 		name: text("name").notNull(),
 		type: petTypeEnum("type").notNull(),
 		breed: text("breed").notNull(),
-		traits: jsonb("traits").notNull().$type<Record<string, number>>(),
 		narrative: text("narrative").notNull(),
 		createdAt: timestamp("created_at", { withTimezone: true })
 			.defaultNow()
