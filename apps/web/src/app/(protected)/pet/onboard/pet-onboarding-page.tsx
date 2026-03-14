@@ -33,10 +33,10 @@ export function PetOnboardingPage({ userId }: PetOnboardingPageProps) {
 		});
 	}, [sendMessage]);
 
-	const state = derivePetState(messages);
+	const state = useMemo(() => derivePetState(messages), [messages]);
 
 	if (state.narrative) {
-		return <PetPreviewPanel messages={messages} />;
+		return <PetPreviewPanel state={state} />;
 	}
 
 	return (

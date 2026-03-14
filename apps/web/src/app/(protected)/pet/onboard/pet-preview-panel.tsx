@@ -1,8 +1,7 @@
 "use client";
 
-import type { UIMessage } from "ai";
 import { useRouter } from "next/navigation";
-import { derivePetState } from "./derive-pet-state";
+import type { PetOnboardingState } from "./derive-pet-state";
 
 const PET_EMOJI: Record<string, string> = {
   dog: "🐶",
@@ -25,9 +24,8 @@ function InfoRow({ label, value }: { label: string; value: string | null }) {
   );
 }
 
-export function PetPreviewPanel({ messages }: { messages: UIMessage[] }) {
+export function PetPreviewPanel({ state }: { state: PetOnboardingState }) {
   const router = useRouter();
-  const state = derivePetState(messages);
 
   return (
     <div className="flex h-full flex-col gap-4">

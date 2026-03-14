@@ -1,6 +1,7 @@
 "use client";
 
 import type { ChatStatus, UIMessage } from "ai";
+import { useCallback } from "react";
 import {
 	PromptInput,
 	PromptInputBody,
@@ -37,6 +38,14 @@ export function TypeformPanel({
 
 	const isDisabled = status === "submitted" || status === "streaming";
 
+	const handleSubmit = useCallback(
+		({ text }: { text: string }) => {
+			if (!text.trim()) return;
+			sendMessage({ text });
+		},
+		[sendMessage],
+	);
+
 	return (
 		<div className="flex h-full flex-col">
 			{/* Progress bar */}
@@ -61,10 +70,7 @@ export function TypeformPanel({
 			{/* Pinned input */}
 			<div className="mt-auto border-t border-gray-100 p-4">
 				<PromptInput
-					onSubmit={({ text }) => {
-						if (!text.trim()) return;
-						sendMessage({ text });
-					}}
+					onSubmit={handleSubmit}
 				>
 					<PromptInputBody>
 						<PromptInputTextarea
