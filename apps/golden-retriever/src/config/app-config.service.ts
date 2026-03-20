@@ -37,22 +37,16 @@ export class AppConfigService {
 		);
 	}
 
-	getAwsRegion(): string {
-		const val = this.configService.get<string>("AWS_REGION");
-		if (!val) throw new Error("AWS_REGION is not set");
-		return val;
+	getAwsRegion(): string | undefined {
+		return this.configService.get<string>("AWS_REGION");
 	}
 
-	getAwsAccessKeyId(): string {
-		const val = this.configService.get<string>("AWS_ACCESS_KEY_ID");
-		if (!val) throw new Error("AWS_ACCESS_KEY_ID is not set");
-		return val;
+	getAwsAccessKeyId(): string | undefined {
+		return this.configService.get<string>("AWS_ACCESS_KEY_ID");
 	}
 
-	getAwsSecretAccessKey(): string {
-		const val = this.configService.get<string>("AWS_SECRET_ACCESS_KEY");
-		if (!val) throw new Error("AWS_SECRET_ACCESS_KEY is not set");
-		return val;
+	getAwsSecretAccessKey(): string | undefined {
+		return this.configService.get<string>("AWS_SECRET_ACCESS_KEY");
 	}
 
 	getS3Bucket(): string {

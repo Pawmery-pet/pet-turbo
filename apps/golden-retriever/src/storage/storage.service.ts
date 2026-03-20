@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import type { S3ClientConfig } from "@aws-sdk/client-s3";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { AppConfigService } from "../config/app-config.service";
@@ -9,13 +10,18 @@ export class StorageService {
 	private readonly bucket: string;
 
 	constructor(private readonly config: AppConfigService) {
-		this.client = new S3Client({
-			region: config.getAwsRegion(),
-			credentials: {
-				accessKeyId: config.getAwsAccessKeyId(),
-				secretAccessKey: config.getAwsSecretAccessKey(),
-			},
-		});
+		const clientConfig: S3ClientConfig = {};
+
+		const region = config.getAwsRegion();
+		if (region) clientConfig.region = region;
+
+		const accessKeyId = config.getAwsAccessKeyId();
+		const secretAccessKey = config.getAwsSecretAccessKey();
+		if (accessKeyId && secretAccessKey) {
+			clientConfig.credentials = { accessKeyId, secretAccessKey };
+		}
+
+		this.client = new S3Client(clientConfig);
 		this.bucket = config.getS3Bucket();
 	}
 
