@@ -36,4 +36,22 @@ export class AppConfigService {
 			DEFAULT_ENVIRONMENT
 		);
 	}
+
+	getAwsRegion(): string | undefined {
+		return this.configService.get<string>("AWS_REGION");
+	}
+
+	getAwsAccessKeyId(): string | undefined {
+		return this.configService.get<string>("AWS_ACCESS_KEY_ID");
+	}
+
+	getAwsSecretAccessKey(): string | undefined {
+		return this.configService.get<string>("AWS_SECRET_ACCESS_KEY");
+	}
+
+	getS3Bucket(): string {
+		const val = this.configService.get<string>("S3_BUCKET");
+		if (!val) throw new Error("S3_BUCKET is not set");
+		return val;
+	}
 }

@@ -38,3 +38,27 @@ export const PetSchema = z.object({
 	createdAt: z.coerce.date(),
 	updatedAt: z.coerce.date(),
 });
+
+export const GetPhotoUploadUrlSchema = z.object({
+	userId: z.string().min(1),
+	contentType: z.string().min(1),
+});
+
+export const AddPhotoSchema = z.object({
+	userId: z.string().min(1),
+	key: z.string().min(1),
+	contentType: z.string().min(1),
+});
+
+export const PhotoUploadUrlSchema = z.object({
+	uploadUrl: z.string().url(),
+	key: z.string().min(1),
+});
+
+export const PetPhotoSchema = z.object({
+	id: z.string(),
+	petId: z.string(),
+	key: z.string(),
+	contentType: z.string(),
+	createdAt: z.coerce.date(),
+});

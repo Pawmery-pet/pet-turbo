@@ -2,6 +2,8 @@ import type {
   CreatePetInput,
   UpdatePetInput,
   Pet,
+  PhotoUploadUrl,
+  PetPhoto,
 } from "./types";
 
 export class PetClient {
@@ -49,5 +51,13 @@ export class PetClient {
 
   remove(id: string, userId: string) {
     return this.request<void>(`/pet/${id}`, "DELETE", { userId });
+  }
+
+  getPhotoUploadUrl(petId: string, dto: { userId: string; contentType: string }) {
+    return this.request<PhotoUploadUrl>(`/pet/${petId}/photos/upload-url`, "POST", dto);
+  }
+
+  addPhoto(petId: string, dto: { userId: string; key: string; contentType: string }) {
+    return this.request<PetPhoto>(`/pet/${petId}/photos`, "PATCH", dto);
   }
 }
