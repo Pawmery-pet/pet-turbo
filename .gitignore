@@ -38,4 +38,13 @@ yarn-error.log*
 *.pem
 
 # NestJs
+next-env.d.ts.worktrees/
+
+# TypeScript
+*.tsbuildinfo
+
+# Next.js
 next-env.d.ts
+
+# Playwright MCP
+.playwright-mcp/
