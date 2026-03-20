@@ -76,6 +76,12 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "@paralleldrive/cuid2": "<rootDir>/__mocks__/cuid2.js"
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }
