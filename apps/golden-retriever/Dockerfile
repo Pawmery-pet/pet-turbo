@@ -45,7 +45,7 @@ COPY --from=installer --chown=nestjs:nodejs /app/apps/$APP_NAME/package.json ./a
 
 USER nestjs
 
-EXPOSE 3010
+EXPOSE 3020
 
 WORKDIR /app/apps/$APP_NAME
 CMD ["node", "dist/main.js"]
