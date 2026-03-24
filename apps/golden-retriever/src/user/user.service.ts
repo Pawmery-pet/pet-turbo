@@ -7,7 +7,7 @@ import {
 	ServiceUnavailableException,
 	UnauthorizedException,
 } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { AuthentikConfigService } from "../config/authentik-config.service";
 
 type AuthentikUser = {
 	pk: number;
@@ -27,16 +27,13 @@ export class UserService {
 	private readonly retryCount: number;
 	private readonly retryDelayMs: number;
 
-	constructor(private readonly configService: ConfigService) {
-		this.baseUrl = (
-			this.configService.get<string>("AUTHENTIK_BASE_URL") ?? ""
-		).replace(/\/$/, "");
-		this.apiToken = this.configService.get<string>("AUTHENTIK_API_TOKEN") ?? "";
-		this.tokenType =
-			this.configService.get<string>("AUTHENTIK_API_TOKEN_TYPE") || "Bearer";
-		this.timeoutMs = this.getNumberFromConfig("AUTHENTIK_TIMEOUT_MS", 5000);
-		this.retryCount = this.getNumberFromConfig("AUTHENTIK_RETRY_COUNT", 2);
-		this.retryDelayMs = this.getNumberFromConfig("AUTHENTIK_RETRY_DELAY_MS", 250);
+	constructor(private readonly authentikConfig: AuthentikConfigService) {
+		this.baseUrl = this.authentikConfig.getBaseUrl();
+		this.apiToken = this.authentikConfig.getApiToken();
+		this.tokenType = this.authentikConfig.getTokenType();
+		this.timeoutMs = this.authentikConfig.getTimeoutMs();
+		this.retryCount = this.authentikConfig.getRetryCount();
+		this.retryDelayMs = this.authentikConfig.getRetryDelayMs();
 	}
 
 	async getUserById(userId: string) {
@@ -178,16 +175,6 @@ export class UserService {
 			`Authentik API unavailable: ${lastError?.message ?? "unknown error"}`,
 		);
 	}
-
-	private getNumberFromConfig(key: string, fallback: number) {
-		const value = this.configService.get<string>(key);
-		if (!value) {
-			return fallback;
-		}
-		const parsed = Number(value);
-		return Number.isNaN(parsed) ? fallback : parsed;
-	}
-
 	private async tryGetBySub(sub: string) {
 		const candidates = this.resolveSubjectCandidates(sub);
 		for (const candidate of candidates) {
