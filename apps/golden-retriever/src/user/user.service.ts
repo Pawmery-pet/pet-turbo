@@ -26,19 +26,22 @@ export class UserService {
 		return user ? this.mapUser(user) : null;
 	}
 
-	async syncUser(input: { sub?: string; email?: string }) {
-		const sub = input.sub?.trim();
-		const email = input.email?.trim();
+	async syncUser(input: { idToken?: string; sub?: string; email?: string }) {
+		const tokenPayload = input.idToken
+			? this.parseIdTokenPayload(input.idToken)
+			: null;
+		const sub = tokenPayload?.sub ?? input.sub?.trim();
+		const email = tokenPayload?.email ?? input.email?.trim();
 
 		if (!sub && !email) {
-			throw new BadRequestException("sync requires sub or email");
+			throw new BadRequestException("sync requires idToken, sub, or email");
 		}
 
 		if (sub) {
 			const userFromSub = await this.tryGetBySub(sub);
 			if (userFromSub) {
 				return {
-					source: "sub",
+					source: tokenPayload ? "idToken.sub" : "sub",
 					user: userFromSub,
 				};
 			}
@@ -48,7 +51,7 @@ export class UserService {
 			const userFromEmail = await this.getUserByEmail(email);
 			if (userFromEmail) {
 				return {
-					source: "email",
+					source: tokenPayload ? "idToken.email" : "email",
 					user: userFromEmail,
 				};
 			}
@@ -70,6 +73,36 @@ export class UserService {
 			lastLogin: user.lastLogin ?? null,
 		};
 	}
+
+	private parseIdTokenPayload(idToken: string) {
+		const token = idToken.trim();
+		const parts = token.split(".");
+		if (parts.length < 2) {
+			throw new BadRequestException("idToken is not a valid JWT");
+		}
+
+		try {
+			const payloadJson = Buffer.from(parts[1], "base64url").toString("utf8");
+			const payload = JSON.parse(payloadJson) as {
+				sub?: unknown;
+				email?: unknown;
+			};
+
+			const sub =
+				typeof payload.sub === "string" && payload.sub.trim()
+					? payload.sub.trim()
+					: undefined;
+			const email =
+				typeof payload.email === "string" && payload.email.trim()
+					? payload.email.trim()
+					: undefined;
+
+			return { sub, email };
+		} catch {
+			throw new BadRequestException("idToken payload could not be decoded");
+		}
+	}
+
 	private async tryGetBySub(sub: string) {
 		const candidates = this.resolveSubjectCandidates(sub);
 		for (const candidate of candidates) {

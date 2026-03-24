@@ -21,7 +21,7 @@ export class UserController {
 	}
 
 	@Post("sync")
-	sync(@Body() body: { sub?: string; email?: string }) {
+	sync(@Body() body: { idToken?: string; sub?: string; email?: string }) {
 		return this.userService.syncUser(body);
 	}
 }
