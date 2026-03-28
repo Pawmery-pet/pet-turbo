@@ -1,6 +1,10 @@
 import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
 import { UserService } from "./user.service";
 
+type SyncUserBody = {
+	idToken?: string;
+};
+
 @Controller("users")
 export class UserController {
 	constructor(private readonly userService: UserService) {}
@@ -21,7 +25,7 @@ export class UserController {
 	}
 
 	@Post("sync")
-	sync(@Body() body: { idToken?: string; sub?: string; email?: string }) {
+	sync(@Body() body: SyncUserBody) {
 		return this.userService.syncUser(body);
 	}
 }

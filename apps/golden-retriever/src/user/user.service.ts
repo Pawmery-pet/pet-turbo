@@ -35,39 +35,26 @@ export class UserService {
 		return user ? this.mapUser(user) : null;
 	}
 
-	async syncUser(input: { idToken?: string; sub?: string; email?: string }) {
-		const tokenPayload = input.idToken
-			? this.parseIdTokenPayload(input.idToken)
-			: null;
-		const sub = tokenPayload?.sub ?? input.sub?.trim();
-		const email = tokenPayload?.email ?? input.email?.trim();
-
-		if (!sub && !email) {
-			throw new BadRequestException("sync requires idToken, sub, or email");
+	async syncUser(input: { idToken?: string }) {
+		if (!input.idToken?.trim()) {
+			throw new BadRequestException("sync requires idToken");
 		}
 
-		if (tokenPayload) {
-			const resolvedUser = await this.resolveUserFromClaims(tokenPayload);
-			if (resolvedUser) {
-				return resolvedUser;
-			}
+		const tokenPayload = this.parseIdTokenPayload(input.idToken);
+		if (!tokenPayload.sub) {
+			throw new BadRequestException("idToken payload is missing sub");
 		}
 
-		if (!tokenPayload && sub) {
-			const userFromSubject = await this.tryGetByOpaqueSubject(sub);
-			if (userFromSubject) {
-				return {
-					source: "sub",
-					user: userFromSubject,
-				};
-			}
+		const resolvedUser = await this.resolveUserFromClaims(tokenPayload);
+		if (resolvedUser) {
+			return resolvedUser;
 		}
 
-		if (email) {
-			const userFromEmail = await this.getUserByEmail(email);
+		if (tokenPayload.email) {
+			const userFromEmail = await this.getUserByEmail(tokenPayload.email);
 			if (userFromEmail) {
 				return {
-					source: tokenPayload ? "idToken.email" : "email",
+					source: "idToken.email",
 					user: userFromEmail,
 				};
 			}
