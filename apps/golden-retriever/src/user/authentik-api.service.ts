@@ -66,6 +66,26 @@ export class AuthentikApiService {
 		return this.getFirstUser(response);
 	}
 
+	async getUserByUsername(username: string): Promise<User | null> {
+		const response = await this.withRetry(() =>
+			this.coreApi.coreUsersList(
+				{ username },
+				this.withTimeout(),
+			),
+		);
+		return this.getFirstUser(response);
+	}
+
+	async getUserByUuid(uuid: string): Promise<User | null> {
+		const response = await this.withRetry(() =>
+			this.coreApi.coreUsersList(
+				{ uuid },
+				this.withTimeout(),
+			),
+		);
+		return this.getFirstUser(response);
+	}
+
 	private withTimeout(): RequestInit {
 		return {
 			signal: AbortSignal.timeout(this.timeoutMs),
