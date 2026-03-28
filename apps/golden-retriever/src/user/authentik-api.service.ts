@@ -11,9 +11,9 @@ import {
 	Configuration,
 	CoreApi,
 	type PaginatedUserList,
+	ResponseError,
 	type User,
 } from "@goauthentik/api";
-import { ResponseError } from "@goauthentik/api/src/runtime";
 import { AuthentikConfigService } from "../config/authentik-config.service";
 
 @Injectable()
@@ -153,39 +153,51 @@ export class AuthentikApiService {
 		return response.results[0] ?? null;
 	}
 
-	private async mapSdkError(error: unknown) {
+	private async mapSdkError(error: unknown): Promise<Error> {
 		if (error instanceof ResponseError) {
-			const body = await error.response.text();
+			const response = error.response;
+			const body = await response.text();
+			const message = body || response.url;
 
-			if (error.response.status === 404) {
+			if (response.status === 404) {
 				return new NotFoundException(
-					`Authentik resource not found: ${body || error.response.url}`,
+					`Authentik resource not found: ${message}`,
 				);
 			}
 
-			if (error.response.status === 401 || error.response.status === 403) {
+			if (response.status === 401 || response.status === 403) {
 				return new UnauthorizedException(
-					`Authentik API auth failed: ${error.response.status} ${body}`,
+					`Authentik API auth failed: ${response.status} ${body}`,
 				);
 			}
 
-			if (error.response.status >= 400 && error.response.status < 500) {
+			if (response.status >= 400 && response.status < 500) {
 				return new BadRequestException(
-					`Authentik API request rejected: ${error.response.status} ${body}`,
+					`Authentik API request rejected: ${response.status} ${body}`,
 				);
 			}
 
 			return new InternalServerErrorException(
-				`Authentik API request failed: ${error.response.status} ${body}`,
+				`Authentik API request failed: ${response.status} ${body}`,
 			);
 		}
 
-		if (error instanceof Error && error.name === "TimeoutError") {
+		if (this.isTimeoutError(error)) {
 			return new GatewayTimeoutException(
 				`Authentik API timeout after ${this.timeoutMs}ms`,
 			);
 		}
 
-		return error;
+		if (error instanceof Error) {
+			return error;
+		}
+
+		return new Error(
+			`Unknown Authentik API error: ${typeof error === "string" ? error : JSON.stringify(error)}`,
+		);
+	}
+
+	private isTimeoutError(error: unknown): error is Error {
+		return error instanceof Error && error.name === "TimeoutError";
 	}
 }
