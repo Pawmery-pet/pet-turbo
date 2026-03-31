@@ -301,6 +301,15 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+<<<<<<< HEAD:apps/golden-retriver/drizzle/meta/0002_snapshot.json
+        },
+        "last_login": {
+          "name": "last_login",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+=======
+>>>>>>> origin/develop:apps/golden-retriever/drizzle/meta/0002_snapshot.json
         }
       },
       "indexes": {},
@@ -385,6 +394,11 @@
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
+<<<<<<< HEAD:apps/golden-retriver/drizzle/meta/0002_snapshot.json
+    }
+  },
+  "enums": {},
+=======
     },
     "public.pet": {
       "name": "pet",
@@ -489,6 +503,7 @@
       ]
     }
   },
+>>>>>>> origin/develop:apps/golden-retriever/drizzle/meta/0002_snapshot.json
   "schemas": {},
   "sequences": {},
   "roles": {},
